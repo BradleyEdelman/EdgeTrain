@@ -1,13 +1,13 @@
 def resources():
 
-    import tensorflow as tf
+    import GPUtil
     import psutil
 
     # Get the number of logical CPU cores
     logical_cores = psutil.cpu_count(logical=True)
 
     # List available GPU devices 
-    gpu_devices = tf.config.list_physical_devices('GPU')
+    gpu_devices = GPUtil.getGPUs()
 
     # Create a list of devices
     devices = [f"/cpu:{i}" for i in range(logical_cores)]  # Use one device per logical core for CPUs
@@ -18,4 +18,3 @@ def resources():
     print(f"All devices (CPUs and GPUs): {devices}")
     
     return devices
-
