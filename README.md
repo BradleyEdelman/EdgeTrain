@@ -1,4 +1,5 @@
 # ScaleML
+**Version: 1.0.0** 
 
 ScaleML is a utility package designed to simplify and automate the setup of distributed machine learning (ML) training strategies. It aims to make it easier to scale ML workflows across multiple nodes and environments, providing seamless integration with popular frameworks like TensorFlow, PyTorch, etc.
 
@@ -18,9 +19,11 @@ pip install scaleml
 
 Alternatively, clone the repository and install manually:
 ```bash
-# Copy code
+# Clone the repository
 git clone https://github.com/BradleyEdelman/scaleml.git
 cd scaleml
+
+# Install the package
 pip install
 ```
 
@@ -28,7 +31,7 @@ Usage
 To use ScaleML, simply import the package and configure your training environment:
 
 ```python
-# Copy code
+# Import library
 import scaleml
 ```
 
