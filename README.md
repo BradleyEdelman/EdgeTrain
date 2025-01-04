@@ -6,6 +6,7 @@ ScaleML is a utility package designed to simplify and automate the setup of dist
 ## Features
 Automated Setup: Quickly configure distributed training strategies for single- and multi-node setups with CPU cores and/or GPUs. <br />
 Easy Integration: Compatible with TensorFlow, PyTorch, and other major ML frameworks. <br />
+Resource Logging: Log and visualize CPU/GPU usage during training to monitor system performance and optimize resource utilization. <br />
 Scalability: Automatically adjusts to the available infrastructure to maximize resource usage. <br />
 Customizable: Easily modify training configurations to meet your specific needs. <br />
 
@@ -42,21 +43,21 @@ ScaleML/
 │   ├── __init__.py
 │   ├── resources.py
 │   ├── strategies.py
+│   ├── distributed_train.py
+│   ├── log_resource_usage.py
+│   ├── plot_resource_usage.py
 ├── tests/
 │   ├── test_resources.py
 │   ├── test_strategies.py
 ├── example_notebooks/
-│   ├── single_node_tensorflow.py
-│   ├── single_node_pytorch.py
-│   ├── single_node_horovod.py
+│   ├── single_node_tensorflow.ipynb
+│   ├── single_node_pytorch.ipynb
+│   ├── single_node_horovod.ipynb
 ├── setup.py
 ├── README.md
 ├── LICENSE
 ├── .gitignore
 ```
-
-
-
 
 ## Contributions
 Report bugs or request features <br />
