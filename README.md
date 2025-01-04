@@ -35,9 +35,10 @@ To use ScaleML, simply import the package and configure your training environmen
 import scaleml
 ```
 
-Report bugs or request features
-Improve the documentation
-Add new training strategies or features
+Contributions
+Report bugs or request features <br />
+Improve the documentation <br />
+Add new training strategies or features <br />
 
 License
 This project is licensed under the MIT License - see the LICENSE file for details.
