@@ -18,20 +18,23 @@ pip install scaleml
 
 Alternatively, clone the repository and install manually:
 ```bash
-Copy code
+# Copy code
 git clone https://github.com/BradleyEdelman/scaleml.git
 cd scaleml
-pip install .
-Usage
-To use ScaleML, simply import the package and configure your training environment:
+pip install
 ```
 
+Usage
+To use ScaleML, simply import the package and configure your training environment:
+
 ```python
-Copy code
+# Copy code
 import scaleml
+```
 
 Report bugs or request features
 Improve the documentation
 Add new training strategies or features
+
 License
 This project is licensed under the MIT License - see the LICENSE file for details.
