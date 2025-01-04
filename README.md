@@ -35,6 +35,29 @@ To use ScaleML, simply import the package and configure your training environmen
 import scaleml
 ```
 
+## File Tree
+```bash
+ScaleML/
+├── scaleml/
+│   ├── __init__.py
+│   ├── resources.py
+│   ├── strategies.py
+├── tests/
+│   ├── test_resources.py
+│   ├── test_strategies.py
+├── example_notebooks/
+│   ├── single_node_tensorflow.py
+│   ├── single_node_pytorch.py
+│   ├── single_node_horovod.py
+├── setup.py
+├── README.md
+├── LICENSE
+├── .gitignore
+```
+
+
+
+
 ## Contributions
 Report bugs or request features <br />
 Improve the documentation <br />
