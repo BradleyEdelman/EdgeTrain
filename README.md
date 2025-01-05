@@ -4,11 +4,11 @@
 ScaleML is a utility package designed to simplify and automate the setup of distributed machine learning (ML) training strategies. It aims to make it easier to scale ML workflows across multiple nodes and environments, providing seamless integration with popular frameworks like TensorFlow, PyTorch, etc.
 
 ## Features
-Automated Setup: Quickly configure distributed training strategies for single- and multi-node setups with CPU cores and/or GPUs. <br />
-Easy Integration: Compatible with TensorFlow, PyTorch, and other major ML frameworks. <br />
-Resource Logging: Log and visualize CPU/GPU usage during training to monitor system performance and optimize resource utilization. <br />
-Scalability: Automatically adjusts to the available infrastructure to maximize resource usage. <br />
-Customizable: Easily modify training configurations to meet your specific needs. <br />
+<u>Automated Setup:</u> Quickly configure distributed training strategies for single- and multi-node setups with CPU cores and/or GPUs. <br />
+<u>Easy Integration:</u> Compatible with TensorFlow, PyTorch, and other major ML frameworks. <br />
+<u>Resource Logging:</u> Log and visualize CPU/GPU usage during training to monitor system performance and optimize resource utilization. <br />
+<u>Scalability:</u> Automatically adjusts to the available infrastructure to maximize resource usage. <br />
+<u>Customizable:</u> Easily modify training configurations to meet your specific needs. <br />
 
 ## Installation
 You can install ScaleML via pip:
