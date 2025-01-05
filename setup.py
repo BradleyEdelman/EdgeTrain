@@ -9,6 +9,7 @@ setup(
         "tensorflow>=2.0",
         "numpy",
         "scipy",
+        "gputil" #gpu detection
         "psutil" # cpu detection
         "distributed",  # For distributed systems
         "dill",  # For serialization of objects
