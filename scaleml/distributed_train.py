@@ -1,18 +1,23 @@
-def distributed_train(strategy, model, train_dataset, log_resources=True):
+def distributed_train(strategy, framework, log_resources=True, train_dataset):
     """
-    Train a model using ScaleML strategy and optionally track resource usage.
+    Train a model using a ScaleML strategy and track resource usage (optional).
     
     Parameters:
-    - strategy: tf.distribute.Strategy for distributed training.
-    - model: The model to be trained.
-    - train_dataset: TensorFlow dataset used for training.
+    - strategy: ScaleML strategy for distributed training.
+    - train_dataset: Dataset used for training.
     - log_resources: Boolean flag to enable/disable resource logging.
     """
     
+    # log resource use throughout training
     if log_resources:
+        if not devices:
+            raise ValueError("Please include devices obtained from resources()")
+        
         # Start logging resources in the background (you can adjust the interval as needed)
-        devices = tf.config.experimental.list_physical_devices()
         log_resource_usage(devices, interval=10)
+
+    # create 
+    model = create_model(input_shape=None, framework)
     
     # Start the training process with resource monitoring
     with strategy.scope():
