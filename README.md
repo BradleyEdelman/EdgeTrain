@@ -1,14 +1,13 @@
 # ScaleML
 **Version: 1.0.0** 
 
-ScaleML is a utility package designed to simplify and automate the setup of distributed machine learning (ML) training strategies. It aims to make it easier to scale ML workflows across multiple nodes and environments, providing seamless integration with popular frameworks like TensorFlow, PyTorch, etc.
+ScaleML is a utility package designed to optimize distributed machine learning (ML) training strategies by dynamically adjusting system resources (such as CPU cores and GPUs) during training. It automates the scaling of resources based on real-time usage to maximize training efficiency and minimize resource waste. <br />
 
 ## Features
-<u>Automated Setup:</u> Quickly configure distributed training strategies for single- and multi-node setups with CPU cores and/or GPUs. <br />
-<u>Easy Integration:</u> Compatible with TensorFlow, PyTorch, and other major ML frameworks. <br />
-<u>Resource Logging:</u> Log and visualize CPU/GPU usage during training to monitor system performance and optimize resource utilization. <br />
-<u>Scalability:</u> Automatically adjusts to the available infrastructure to maximize resource usage. <br />
-<u>Customizable:</u> Easily modify training configurations to meet your specific needs. <br />
+Automated Resource Adjustment: Dynamically adjusts the number of workers and batch size based on CPU/GPU usage, optimizing resource utilization throughout training. <br />
+Resource Logging & Visualization: Logs CPU/GPU usage and training parameters, enabling real-time visualization of resource utilization and training performance. <br />
+Scalability: Automatically scales training to available resources, adjusting training strategies as required. <br />
+Customizable: Easily modify resource adjustment thresholds and training configurations to meet your specific needs. <br />
 
 ## Installation
 You can install ScaleML via pip:
@@ -41,20 +40,20 @@ import scaleml
 ScaleML/
 ├── scaleml/
 │   ├── __init__.py
-│   ├── resources.py
-│   ├── strategies.py
-│   ├── distributed_train.py
-│   ├── log_resource_usage.py
-│   ├── plot_resource_usage.py
+│   ├── dynamic_train.py
+│   ├── resource_monitor.py
+│   ├── resource_adjust.py
+│   ├── log_analysis.py
 ├── tests/
-│   ├── test_resources.py
-│   ├── test_strategies.py
+│   ├── 
+│   ├── 
 ├── example_notebooks/
-│   ├── single_node_tensorflow.ipynb
-│   ├── single_node_pytorch.ipynb
-│   ├── single_node_horovod.ipynb
+│   ├── ScaleML_tf_ex.ipynb
+│   ├── 
+│   ├── 
 ├── setup.py
 ├── README.md
+├── requirements.txt
 ├── LICENSE
 ├── .gitignore
 ```
