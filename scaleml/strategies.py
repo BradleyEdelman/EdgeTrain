@@ -1,4 +1,4 @@
-def strategies(framework, detected_resources, devices):
+def strategies(framework, detected_resources, devices='all'):
     """
     Sets up a distributed training strategy based on the chosen framework, available resources, and specified devices.
 
@@ -20,9 +20,9 @@ def strategies(framework, detected_resources, devices):
         raise ValueError("Resources must be provided. Use the 'resources()' function to detect resources.")
         
     # Extract logical cores and GPU devices from detected resources.
-    logical_cores = detected_resources.get('logical_cores', 0)
-    gpu_devices = detected_resources.get('gpu_devices', [])
-    if devices == 'gpu' and not gpu_devices:
+    logical_cores = [i for i, detected_resources in enumerate(detected_resources) if 'cpu' in detected_resources]
+    gpu_devices = [i for i, detected_resources in enumerate(detected_resources) if 'gpu' in detected_resources]
+    if devices in ['gpu', 'all'] and not gpu_devices:
         print("No GPUs exist. Only using CPU resources.")
         devices = 'cpu'
 
