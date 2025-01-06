@@ -1,19 +1,27 @@
-def create_model(input_shape=None, framework):
+def create_model(framework, input_shape):
     """
     Create a Convolutional Neural Network (CNN) model for the specified framework.
 
     Parameters:
+    - framework (dict): A dictionary containing the framework details.
+                         Expected keys: 'model', 'strategy'.
+                         Options for 'model': 'tensorflow', 'pytorch'.
+                         Options for 'strategy': 'tensorflow', 'pytorch', 'horovod'.
     - input_shape: tuple, the shape of the input data (e.g., (28, 28, 1) for MNIST).
-    - framework: str, the deep learning framework to use ('tensorflow', 'pytorch').
 
     Returns:
-    - model: A compiled model for the specified framework.
+    - model: A compiled model for the specified model framework.
     """
     
+    # Ensure that the input shape is provided
     if input_shape is None:
         raise ValueError("Input shape must be defined.")
     
-    if framework == 'tensorflow':
+    # Extract the model framework
+    model_framework = framework.get('model')
+    
+    # Customize the model by adding/removing layers, changing activation functions, or modifying hyperparameters
+    if model_framework == 'tensorflow':
         
         import tensorflow as tf
         # Define a Sequential model with Conv2D, MaxPooling2D, Flatten, and Dense layers
@@ -32,9 +40,8 @@ def create_model(input_shape=None, framework):
                       loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                       metrics=['accuracy'])
         return model
-        # Customize the model by adding/removing layers, changing activation functions, or modifying hyperparameters
     
-    elif framework == 'pytorch':
+    elif model_framework == 'pytorch':
         
         import torch.nn as nn
         import torch.nn.functional as F
@@ -42,10 +49,10 @@ def create_model(input_shape=None, framework):
         class CNN(nn.Module):
             def __init__(self):
                 super(CNN, self).__init__()
-                self.conv1 = nn.Conv2d(in_channels=input_shape[2], out_channels=32, kernel_size=3, activation='relu')
+                self.conv1 = nn.Conv2d(in_channels=input_shape[2], out_channels=32, kernel_size=3)
                 self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
-                self.conv2 = nn.Conv2d(32, 64, 3, activation='relu')
-                self.conv3 = nn.Conv2d(64, 64, 3, activation='relu')
+                self.conv2 = nn.Conv2d(32, 64, 3)
+                self.conv3 = nn.Conv2d(64, 64, 3)
                 self.fc1 = nn.Linear(64 * 5 * 5, 64)
                 self.fc2 = nn.Linear(64, 10)
 
@@ -62,4 +69,4 @@ def create_model(input_shape=None, framework):
         return model
     
     else:
-        raise ValueError("Unsupported framework. Please choose 'tensorflow', 'pytorch'.")
+        raise ValueError("Unsupported framework. Please choose 'tensorflow' or 'pytorch'.")

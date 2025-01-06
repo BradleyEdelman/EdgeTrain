@@ -39,3 +39,5 @@ def log_resource_usage(devices, interval=10):
             
             # Sleep for the interval before logging again
             time.sleep(interval)
+            
+    return log_file

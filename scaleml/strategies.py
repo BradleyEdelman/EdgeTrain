@@ -1,34 +1,37 @@
-def strategies(detected_resources, devices, framework):
+def strategies(framework, detected_resources, devices):
     """
     Sets up a distributed training strategy based on the chosen framework, available resources, and specified devices.
 
     Args:
-        detected_resources (dict): A dictionary containing the detected resources. 
-                         Expected keys: 'logical_cores', 'gpu_devices'.
-        devices (str): The type of devices to use. Options: 'cpu', 'gpu', 'all'.
         framework (dict): A dictionary containing the framework details.
                          Expected keys: 'model', 'strategy'.
                          Options for 'model': 'tensorflow', 'pytorch'.
                          Options for 'strategy': 'tensorflow', 'pytorch', 'horovod'.
+        detected_resources (dict): A dictionary containing the detected resources. 
+                         Expected keys: 'logical_cores', 'gpu_devices'.
+        devices (str): The type of devices to use. Options: 'cpu', 'gpu', 'all'.
 
     Returns:
         Distributed ScaleML training strategy appropriate for the model.
     """
     
+    # Check if detected resources are provided, if not raise an error.
     if detected_resources is None:
         raise ValueError("Resources must be provided. Use the 'resources()' function to detect resources.")
         
+    # Extract logical cores and GPU devices from detected resources.
     logical_cores = detected_resources.get('logical_cores', 0)
     gpu_devices = detected_resources.get('gpu_devices', [])
-    
     if devices == 'gpu' and not gpu_devices:
         print("No GPUs exist. Only using CPU resources.")
         devices = 'cpu'
 
+    # extract framework assignments
     framework_model = framework.get('model')
     framework_strategy = framework.get('strategy')
+    
 
-    # distributed strategy depending on specified framework and model
+    # Create a istributed strategy depending on the input framework
     if framework_strategy.lower() == 'tensorflow':
         
         if framework_model.lower() != 'tensorflow':
