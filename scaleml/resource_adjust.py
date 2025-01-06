@@ -1,6 +1,7 @@
 import tensorflow as tf
 import psutil
 import GPUtil
+from scaleml import sys_resources
 
 # Function to dynamically adjust workers based on resource usage
 def adjust_workers(cpu_threshold=80, gpu_threshold=80):
@@ -10,7 +11,7 @@ def adjust_workers(cpu_threshold=80, gpu_threshold=80):
     Returns:
     - num_workers: Number of workers to use.
     """
-    cpu_percent, gpu_memory_usage, gpu_memory_total, gpu_percent = get_system_resources()
+    cpu_percent, gpu_memory_usage, gpu_memory_total, gpu_percent = sys_resources()
     
     if cpu_percent > cpu_threshold or gpu_percent > gpu_threshold:
         print(f"High resource usage detected: CPU={cpu_percent}%, GPU={gpu_percent}%")

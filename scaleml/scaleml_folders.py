@@ -1,4 +1,4 @@
-def create_scaleml_folders():
+def scaleml_folders():
 
     import os
 

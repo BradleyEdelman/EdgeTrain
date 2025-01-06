@@ -1,3 +1,8 @@
+import tensorflow as tf
+from tensorflow.keras import layers, models
+import torch.nn as nn
+import torch.nn.functional as F
+
 def create_model_tf(input_shape, model_path=None):
     """
     Create a Convolutional Neural Network (CNN) model.
@@ -13,24 +18,22 @@ def create_model_tf(input_shape, model_path=None):
     # Ensure that the input shape is provided
     if input_shape is None:
         raise ValueError("Input shape must be defined.")
-        
-    import tensorflow as tf
-    from tensorflow.keras import layers, models
 
     # Define a Sequential model with input layer, Conv2D, MaxPooling2D, Flatten, and Dense layers
     model = models.Sequential([
-        layers.InputLayer(shape=(28, 28, 1)),
+        layers.InputLayer(shape=input_shape),
         layers.Conv2D(32, (3, 3), activation='relu'),
         layers.MaxPooling2D((2, 2)),
+        layers.Conv2D(64, (3, 3), activation='relu'),
+        layers.MaxPooling2D((2, 2)),
+        layers.Conv2D(64, (3, 3), activation='relu'),
         layers.Flatten(),
-        layers.Dense(128, activation='relu'),
+        layers.Dense(64, activation='relu'),
         layers.Dense(10, activation='softmax')
     ])
 
     # Compile the model with Adam optimizer and SparseCategoricalCrossentropy loss
-    model.compile(optimizer='adam', 
-        loss='sparse_categorical_crossentropy', 
-        metrics=['accuracy'])
+    model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
     return model
 
 
@@ -45,9 +48,6 @@ def create_model_torch(input_shape, model_path=None):
     Returns:
     - model: A compiled pytorch model.
     """
-        
-    import torch.nn as nn
-    import torch.nn.functional as F
 
     class CNN(nn.Module):
         def __init__(self):
