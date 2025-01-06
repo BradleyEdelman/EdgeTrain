@@ -70,28 +70,5 @@ def strategies(framework, detected_resources, resource_type='all'):
             print(f"PyTorch device: {strategy}")
             return strategy
 
-    # elif framework_strategy.lower() == 'horovod':
-        
-    #     import horovod.tensorflow as hvd_tf
-    #     import horovod.torch as hvd_torch
-        
-    #     if framework_model.lower() == 'tensorflow':
-    #         hvd_tf.init()
-    #         print(f"Horovod TensorFlow rank: {hvd_tf.rank()}, size: {hvd_tf.size()}")
-            
-    #         if gpu_devices:
-    #             import tensorflow as tf
-    #             tf.config.experimental.set_visible_devices(gpu_devices[hvd_tf.local_rank()], 'GPU')
-    #         return hvd_tf
-        
-    #     elif framework_model.lower() == 'pytorch':
-    #         hvd_torch.init()
-    #         print(f"Horovod PyTorch rank: {hvd_torch.rank()}, size: {hvd_torch.size()}")
-            
-    #         if gpu_devices:
-    #             import torch
-    #             torch.cuda.set_device(hvd_torch.local_rank())
-    #         return hvd_torch
-
     else:
         raise ValueError("Unsupported framework or model. Choose from 'tensorflow' or 'pytorch'.")

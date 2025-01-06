@@ -20,7 +20,7 @@ def distributed_train(framework, strategy, train_dataset, log_resources=True):
     # import horovod.tensorflow as hvd_tf
     # import horovod.torch as hvd_torch
 
-    from scaleml import create_scaleml_folders, create_model, start_logging, stop_logging
+    from scaleml import create_scaleml_folders, create_model_tf, create_model_torch, start_logging, stop_logging
 
     # create folders for saving
     scaleml_folder = create_scaleml_folders()
@@ -36,38 +36,34 @@ def distributed_train(framework, strategy, train_dataset, log_resources=True):
     print()
     
     # Detect size of the first image from train_dataset
-    for images, labels in train_dataset.take(1):
-        input_shape = images.shape[1:]
-        break
-
-    # create model based on the detected framework
-    model = create_model(strategy, framework, input_shape)
+    train_images = train_dataset.get('images')
+    train_labels = train_dataset.get('labels')
+    input_shape = train_images[0].shape
     
     # Save the model
     log_time = log_file.split('/')[-1]
     log_time = log_time.split('_')[0]
-    if framework == 'tensorflow':
-        model.save(os.path.join(f"{scaleml_folder}/models/", f"{log_time}_tf_model.h5"))
-    elif framework == 'pytorch':
-        torch.save(model.state_dict(), os.path.join(f"{scaleml_folder}/models/", 'f"{log_time}_torch_model.pth'))
     
     # Start the training process with or without resource monitoring
-    if isinstance(strategy, tf.distribute.Strategy):
-
+    if framework.get('strategy') == 'tensorflow':
+        
         with strategy.scope():
-            history = model.fit(train_dataset, epochs=2)
+            model = create_model_tf(input_shape, model_path=None)
+            
+            model.save(os.path.join(f"{scaleml_folder}/models/", f"{log_time}_tf_model.h5"))
+
+            history = model.fit(train_images, train_labels, epochs=2)
             history_file = os.path.join(f"{scaleml_folder}/models/", f"{log_time}_tf_model_history.pkl")
             with open(history_file, 'wb') as f:
                 pickle.dump(history.history, f)
 
-    elif isinstance(strategy, torch.device):
-        model.to(strategy)
-        # history = train_pytorch_model(model, train_dataset, epochs=2)
+    elif framework.get('strategy') == 'pytorch':
+
+        # train pytorch model
+
         history_file = os.path.join(f"{scaleml_folder}/models/", f"{log_time}_torch_model_history.pkl")
         with open(history_file, 'wb') as f:
                 pickle.dump(history.history, f)
-
-    # elif 'horovod' in str(type(strategy)).lower():
 
     if log_resources:
         # Stop the logging once training is complete
