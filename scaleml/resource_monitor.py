@@ -1,29 +1,68 @@
 import psutil, GPUtil, time, csv
 from datetime import datetime
+from pynvml import nvmlInit, nvmlDeviceGetHandleByIndex, nvmlDeviceGetUtilizationRates, nvmlShutdown
 
-# Function to monitor system resources
 def sys_resources():
-    # Check CPU usage
-    cpu_percent = psutil.cpu_percent(interval=1)
+    """
+    Monitor system resources, including CPU and GPU utilization and memory usage.
+
+    Returns:
+    - cpu_cores: Number of logical CPU cores.
+    - cpu_compute_percent: CPU utilization as a percentage.
+    - cpu_memory_percent: RAM usage as a percentage.
+    - gpu_compute_percent: Average GPU compute utilization as a percentage.
+    - gpu_memory_usage: Total GPU memory used across all GPUs (in MB).
+    - gpu_memory_total: Total available GPU memory across all GPUs (in MB).
+    - gpu_memory_percent: Average GPU memory utilization as a percentage.
+    - num_gpus: Number of GPUs available.
+    """
+
+    # Check CPU usage (compute and RAM)
+    cpu_compute_percent = psutil.cpu_percent(interval=1)
+    cpu_cores = psutil.cpu_count(logical=True)
     
-    # Check GPU usage
+    # Check GPU usage (memory and compute)
     gpus = GPUtil.getGPUs()
+    num_gpus = len(gpus)
     gpu_memory_usage = sum(gpu.memoryUsed for gpu in gpus)
     gpu_memory_total = sum(gpu.memoryTotal for gpu in gpus)
-    gpu_percent = sum(gpu.memoryUtil for gpu in gpus) / len(gpus) if gpus else 0
+    gpu_memory_percent = sum(gpu.memoryUtil for gpu in gpus) / num_gpus if gpus else 0
     
-    return cpu_percent, gpu_memory_usage, gpu_memory_total, gpu_percent
+    # GPU compute utilization
+    gpu_compute_percent = 0
+    if num_gpus > 0:
+        nvmlInit()
+        try:
+            gpu_compute_percent = sum(nvmlDeviceGetUtilizationRates(nvmlDeviceGetHandleByIndex(i)).gpu for i in range(num_gpus)) / num_gpus
+        finally:
+            nvmlShutdown()
+    
+    # Check system memory usage (RAM)
+    cpu_memory_percent = psutil.virtual_memory().percent
+    
+    return {
+        "cpu_cores": cpu_cores,
+        "cpu_compute_percent": cpu_compute_percent,
+        "cpu_memory_percent": cpu_memory_percent,
+        "gpu_compute_percent": gpu_compute_percent,
+        "gpu_memory_usage": gpu_memory_usage,
+        "gpu_memory_total": gpu_memory_total,
+        "gpu_memory_percent": gpu_memory_percent,
+        "num_gpus": num_gpus
+    }
+
 
 # Function to log resource usage and batch size
-def log_usage_once(log_file, batch_size, num_workers, num_epoch=0):
+def log_usage_once(log_file, lr, batch_size, grad_accum, num_epoch=0):
     """
     Log GPU and CPU resource usage once.
     
     Parameters:
-    - log_file: Path to the log file.
-    - batch_size: Current batch size.
-    - num_workers: Number of workers.
-    - num_epoch: Current epoch number.
+    - log_file (str): Path to the log file.
+    - lr (float): Learning rate.
+    - batch_size (int): Current batch size.
+    - grad_accum (int): Gradient accumulation steps.
+    - num_epoch (int, optional): Current epoch number. Default is 0.
     """
     
     # Create CSV header if the file doesn't exist
@@ -34,24 +73,31 @@ def log_usage_once(log_file, batch_size, num_workers, num_epoch=0):
         with open(log_file, 'w', newline='') as f:
             writer = csv.writer(f)
             header = [
-                'Timestamp', 'Epoch #', 'CPU Usage (%)', 'GPU Memory Used (MB)', 
-                'GPU Memory Total (MB)', 'GPU Usage (%)', 'Batch Size', 'Num Workers'
+                'Timestamp', 'Epoch #', 'CPU Usage (%)', 'CPU RAM (%)',
+                 'GPU RAM (%)', 'GPU Usage (%)',
+                 'Batch Size', 'Learning Rate', 'Grad Accum'
             ]
             writer.writerow(header)
 
     # Get resource usage
-    cpu_percent, gpu_memory_usage, gpu_memory_total, gpu_percent = sys_resources()
+    resources = sys_resources()
+    cpu_compute_percent=resources.get('cpu_compute_percent')
+    cpu_memory_percent = resources.get('cpu_memory_percent')
+    gpu_compute_percent = resources.get('gpu_compute_percent') 
+    gpu_memory_percent = resources.get('gpu_memory_percent')
+    
     
     # Prepare log entry
     log_entry = [
         datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         num_epoch,
-        cpu_percent,
-        gpu_memory_usage,
-        gpu_memory_total,
-        gpu_percent,
+        cpu_compute_percent,
+        cpu_memory_percent,
+        gpu_compute_percent,
+        gpu_memory_percent,
         batch_size,
-        num_workers
+        lr,
+        grad_accum
     ]
 
     # Append log entry to the file

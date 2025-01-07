@@ -1,6 +1,17 @@
-def scaleml_folders():
+import os
 
-    import os
+
+def scaleml_folders():
+    """
+    Creates the necessary folder structure for the ScaleML project.
+
+    This function navigates from the current working directory to the root directory,
+    then creates a "ScaleML" directory with subdirectories for models, logs, and images
+    if they do not already exist.
+
+    Returns:
+        str: The path to the "ScaleML" directory.
+    """
 
     # Get the current working directory (assumed to be within the 'notebooks' folder)
     cwd = os.getcwd()

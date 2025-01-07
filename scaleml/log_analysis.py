@@ -19,39 +19,42 @@ def log_usage_plot(log_file):
         print(f"Log file '{log_file}' not found.")
         return
     
-    # Convert the 'Timestamp' column to datetime format
-    df['Timestamp'] = pd.to_datetime(df['Timestamp'])
-
     # Create the figure and axes for plotting
     plt.figure(figsize=(14, 10))
 
-    # Plot CPU usage over time
-    plt.subplot(3, 1, 1)
-    plt.plot(df['Timestamp'], df['CPU Usage (%)'], label='CPU Usage (%)', color='tab:blue')
-    plt.xlabel('Timestamp')
-    plt.ylabel('CPU Usage (%)')
-    plt.title('CPU Usage Over Time')
-    plt.legend()
+    # Plot CPU and GPU usage over time on the same plot with workers on a separate y axis
+    fig, ax1 = plt.subplots(2, 1, figsize=(14, 10))
 
-    # Plot GPU usage over time
-    plt.subplot(3, 1, 2)
-    plt.plot(df['Timestamp'], df['GPU Usage (%)'], label='GPU Usage (%)', color='tab:orange')
-    plt.xlabel('Timestamp')
-    plt.ylabel('GPU Usage (%)')
-    plt.title('GPU Usage Over Time')
-    plt.legend()
+    ax1 = plt.subplot(3, 1, 1)
+    ax1.plot(df['Epoch #'], df['CPU Usage (%)'], label='CPU Usage (%)', color='tab:blue')
+    ax1.plot(df['Epoch #'], df['GPU Usage (%)'], label='GPU Usage (%)', color='tab:orange')
+    ax1.set_xlabel('Epoch #')
+    ax1.set_ylabel('Usage (%)')
+    ax1.set_title('CPU and GPU Usage Over Time')
+    ax1.legend(loc='upper left')
 
-    # Plot Batch Size and Number of Workers over time
-    plt.subplot(3, 1, 3)
-    plt.plot(df['Timestamp'], df['Batch Size'], label='Batch Size', color='tab:green', linestyle='--')
-    plt.plot(df['Timestamp'], df['Num Workers'], label='Num Workers', color='tab:red', linestyle='--')
-    plt.xlabel('Timestamp')
-    plt.ylabel('Batch Size / Num Workers')
-    plt.title('Batch Size and Number of Workers Over Time')
-    plt.legend()
+    # Plot CPU and GPU RAM usage over time on the same plot with batch size on a separate y axis
+    ax2 = plt.subplot(3, 1, 2)
+    ax2.plot(df['Epoch #'], df['CPU RAM (%)'], label='CPU RAM (%)', color='tab:blue')
+    ax2.plot(df['Epoch #'], df['GPU RAM (%)'], label='GPU RAM (%)', color='tab:orange')
+    ax2.set_xlabel('Epoch #')
+    ax2.set_ylabel('RAM (%)')
+    ax2.set_title('CPU and GPU RAM Usage Over Time')
+    ax2.legend(loc='upper left')
+
+    # Plot Batch Size, Learning Rate, and Grad Accum over time on the same plot
+    ax3 = plt.subplot(3, 1, 3)
+    ax3.plot(df['Epoch #'], df['Batch Size'], label='Batch Size', color='tab:green')
+    ax3.plot(df['Epoch #'], df['Learning Rate'], label='Learning Rate', color='tab:blue')
+    ax3.plot(df['Epoch #'], df['Grad Accum'], label='Grad Accum', color='tab:orange')
+    ax3.set_xlabel('Epoch #')
+    ax3.set_ylabel('Values')
+    ax3.set_title('Batch Size, Learning Rate, and Grad Accum Over Time')
+    ax3.legend(loc='upper left')
 
     plt.tight_layout()
     plt.show()
+
 
 def log_train_time(log_file):
     """

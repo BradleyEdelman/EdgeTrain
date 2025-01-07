@@ -8,8 +8,8 @@ def create_model_tf(input_shape, model_path=None):
     Create a Convolutional Neural Network (CNN) model.
 
     Parameters:
-    - input_shape: tuple, the shape of the input data (e.g., (1, 28, 28) for MNIST).
-    - model_path: str, the path to load the model.
+    - input_shape (tuple): the shape of the input data (e.g., (1, 28, 28) for MNIST).
+    - model_path (str): the path to load the model.
 
     Returns:
     - model: A compiled tensorflow model.
@@ -19,21 +19,22 @@ def create_model_tf(input_shape, model_path=None):
     if input_shape is None:
         raise ValueError("Input shape must be defined.")
 
-    # Define a Sequential model with input layer, Conv2D, MaxPooling2D, Flatten, and Dense layers
-    model = models.Sequential([
-        layers.InputLayer(shape=input_shape),
-        layers.Conv2D(32, (3, 3), activation='relu'),
-        layers.MaxPooling2D((2, 2)),
-        layers.Conv2D(64, (3, 3), activation='relu'),
-        layers.MaxPooling2D((2, 2)),
-        layers.Conv2D(64, (3, 3), activation='relu'),
-        layers.Flatten(),
-        layers.Dense(64, activation='relu'),
-        layers.Dense(10, activation='softmax')
-    ])
-
-    # Compile the model with Adam optimizer and SparseCategoricalCrossentropy loss
-    model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+    if model_path and tf.io.gfile.exists(model_path):
+        model = tf.keras.models.load_model(model_path)
+    else:
+        # Define a Sequential model with input layer, Conv2D, MaxPooling2D, Flatten, and Dense layers
+        model = models.Sequential([
+            layers.InputLayer(shape=input_shape),
+            layers.Conv2D(32, (3, 3), activation='relu'),
+            layers.MaxPooling2D((2, 2)),
+            layers.Conv2D(64, (3, 3), activation='relu'),
+            layers.MaxPooling2D((2, 2)),
+            layers.Conv2D(64, (3, 3), activation='relu'),
+            layers.Flatten(),
+            layers.Dense(64, activation='relu'),
+            layers.Dense(10, activation='softmax')
+        ])
+        
     return model
 
 
@@ -42,8 +43,8 @@ def create_model_torch(input_shape, model_path=None):
     Create a Convolutional Neural Network (CNN) model.
 
     Parameters:
-    - input_shape: tuple, the shape of the input data (e.g., (1, 28, 28) for MNIST).
-    - model_path: str, the path to load the model.
+    - input_shape (tuple): the shape of the input data (e.g., (1, 28, 28) for MNIST).
+    - model_path (str): the path to load the model.
 
     Returns:
     - model: A compiled pytorch model.

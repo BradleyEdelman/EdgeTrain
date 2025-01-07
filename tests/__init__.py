@@ -6,19 +6,16 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 's
 print(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'scaleml')))
 
 # Import modules from scaleml
-from scaleml.resources import resources
-from scaleml.strategies import strategies
-from scaleml.log_resource_usage import log_resource_usage
-from scaleml.plot_resource_log import plot_resource_log
-from scaleml.distributed_train import distributed_train
-from scaleml.create_model import create_model
+from scaleml.resource_monitor import sys_resources, log_usage_once
+from scaleml.resource_adjust import adjust_workers, adjust_batch_size
+from scaleml.log_analysis import log_usage_plot, log_train_time
+from scaleml.scaleml_folders import scaleml_folders
+from scaleml.create_model import create_model_tf, create_model_torch
+from scaleml.dynamic_train import dynamic_train
 
 # Import other testing libraries
 import pytest
 import tensorflow as tf
-# import horovod
-# import horovod.tensorflow as hvd_tf
-# import horovod.torch as hvd_torch
 import psutil
 import GPUtil
 
