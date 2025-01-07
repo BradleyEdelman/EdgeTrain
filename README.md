@@ -1,42 +1,41 @@
-# OptiTrain: Automated Resource Adjustment for Efficient Training
+# EdgeTrain: Automated Resource Adjustment for Efficient Edge AI Training 
 **Version: 1.0.0** 
 
-OptiTrain is a Python package designed to dynamically adjust training hyperparameters and system resource utilization based on CPU and GPU performance. It optimizes the training process by adjusting key hyperparameters—batch size, learning rate, and gradient accumulation steps—ensuring efficient training without overutilizing or underutilizing available resources. <br />
+EdgeTrain is a Python package designed to dynamically adjust training parameters and strategies based on CPU and GPU performance. It optimizes the training process by adjusting batch size, model pruning strategies, and gradient accumulation steps to ensure efficient training without overutilizing or underutilizing available resources. This package is specifically designed to reduce memory usage for model training on edge AI devices, such as the Jetson Orin Nano (Plus), that have limited RAM. <br />
 
 ## Features
 ### Automated Resource Adjustment
-OptiTrain dynamically adjusts the following hyperparameters based on CPU/GPU usage:
+EdgeTrain dynamically adjusts the following hyperparameters based on CPU/GPU usage:
 - Batch Size: Automatically adjusts batch size for better memory optimization.
-- Learning Rate: Scales learning rate according to available compute resources.
+- Model Pruning: Removes unimportant model weights to reduce RAM usage.
 - Gradient Accumulation Steps: Adjusts gradient accumulation steps to balance GPU memory usage and performance.
 These adjustments optimize resource utilization throughout training, enabling efficient use of available resources.
 <br />
 
 ### Resource Logging & Visualization
-OptiTrain logs critical system metrics (e.g., CPU and GPU usage) and training parameters (batch size, learning rate, gradient accumulation steps) for each epoch. The logs enable post-hoc visualization and analysis of:
+EdgeTrain logs critical system metrics (e.g., CPU and GPU usage) and training parameters (batch size, model weights, gradient accumulation steps) for each epoch. The logs enable post-hoc visualization and analysis of:
 - Resource utilization over time
 - Training parameter adjustments across epochs
-- Correlations between resource usage and model performance
-<br />
+- Correlations between resource usage and model performance <br />
 
 ### Customizable
-OptiTrain is highly customizable. You can easily modify:
+EdgeTrain is highly customizable. You can easily modify:
 - Resource Adjustment Thresholds: Set CPU/GPU usage ranges to trigger adjustments.
-- Training Configuration Settings: Adjust batch size increment, learning rate scaling, and gradient accumulation steps.
-- Tailor the optimization process to fit your specific needs, whether you're working with a single machine or multi-node setups.<br />
+- Training Configuration Settings: Adjust batch size increment, model pruning strategies, and gradient accumulation steps.
+- Tailor the optimization process to fit your various setups with limited resources. <br />
 
 ## Installation
-You can install OptiTrain via pip:
+You can install EdgeTrain via pip:
 
 ```bash
 # Copy code
-pip install optitrain
+pip install edgetrain
 ```
 
 Alternatively, clone the repository and install manually:
 ```bash
 # Clone the repository
-git clone https://github.com/BradleyEdelman/optitrain.git
+git clone https://github.com/BradleyEdelman/edgetrain.git
 cd optitrain
 
 # Install the package
@@ -44,7 +43,7 @@ pip install
 ```
 
 ## Usage
-To use OptiTrain, simply import the package and configure your training environment:
+To use EdgeTrain, simply import the package and configure your training environment:
 
 ```python
 # Import library
@@ -53,8 +52,8 @@ import optitrain
 
 ## File Tree
 ```bash
-OptiTrain/
-├── optitrain/
+EdgeTrain/
+├── edgetrain/
 │   ├── __init__.py
 │   ├── dynamic_train.py
 │   ├── resource_monitor.py
@@ -64,7 +63,7 @@ OptiTrain/
 │   ├── 
 │   ├── 
 ├── example_notebooks/
-│   ├── ScaleML_tf_ex.ipynb
+│   ├── EdegTrain_tf_ex.ipynb
 │   ├── 
 │   ├── 
 ├── setup.py
