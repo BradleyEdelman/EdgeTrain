@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="scaleml",
+    name="optitrain",
     version="0.1.0",
     packages=find_packages(),
     install_requires=[
@@ -17,7 +17,7 @@ setup(
     description="A utility for distributed machine learning training strategies.",
     author="Bradley Edelman",
     author_email="bjedelma@gmail.com",
-    url="https://github.com/BradleyEdelman/scaleml",
+    url="https://github.com/BradleyEdelman/optitrain",
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

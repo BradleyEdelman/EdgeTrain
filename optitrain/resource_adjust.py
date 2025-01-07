@@ -1,6 +1,6 @@
 import tensorflow as tf
 import psutil, GPUtil
-from scaleml import sys_resources
+from optitrain import sys_resources
 
 def adjust_threads(cpu_threshold=[20, 80], gpu_threshold=[20, 80], increment=1):
     """

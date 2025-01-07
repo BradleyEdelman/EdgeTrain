@@ -1,6 +1,6 @@
 import tensorflow as tf
 from tensorflow.keras.optimizers import Adam
-from scaleml import log_usage_once, adjust_threads, adjust_batch_size, adjust_learning_rate, create_model_tf
+from optitrain import log_usage_once, adjust_threads, adjust_batch_size, adjust_learning_rate, create_model_tf
 
 def dynamic_train(train_dataset, epochs=10, batch_size=32, lr=1e-3, grad_accum=1, log_file="resource_log.csv", dynamic_adjustments=True):
     """
