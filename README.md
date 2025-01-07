@@ -9,8 +9,7 @@ EdgeTrain dynamically adjusts the following hyperparameters based on CPU/GPU usa
 - Batch Size: Automatically adjusts batch size for better memory optimization.
 - Model Pruning: Removes unimportant model weights to reduce RAM usage.
 - Gradient Accumulation Steps: Adjusts gradient accumulation steps to balance GPU memory usage and performance.
-These adjustments optimize resource utilization throughout training, enabling efficient use of available resources.
-<br />
+These adjustments optimize resource utilization throughout training, enabling efficient use of available resources. <br />
 
 ### Resource Logging & Visualization
 EdgeTrain logs critical system metrics (e.g., CPU and GPU usage) and training parameters (batch size, model weights, gradient accumulation steps) for each epoch. The logs enable post-hoc visualization and analysis of:
