@@ -56,38 +56,47 @@ history = edgetrain.dynamic_train(train_dataset, epochs=10, batch_size=32, lr=1e
 ```
 
 ## File Tree
+```
 EdgeTrain/
 ├── edgetrain/
 │   ├── __init__.py
+│   ├── create_model.py
 │   ├── dynamic_train.py
-│   ├── resource_monitor.py
+│   ├── edgetrain_folder
 │   ├── resource_adjust.py
-│   ├── log_analysis.py
+│   ├── resource_monitor.py
+│   ├── train_visualize.py
 ├── tests/
+│   ├── __init__.py
+│   ├── test_adjust_batch_size.py
+│   ├── test_adjust_learning_rate.py
+│   ├── test_create_model_tf.py
+│   ├── test_log_usage_once.py
+│   ├── test_sys_resources.py
 │   ├── test_dynamic_train.py
-│   ├── test_resource_monitor.py
-│   ├── test_resource_adjust.py
 ├── example_notebooks/
-│   ├── EdgeTrain_tf_ex.ipynb  # Example notebook for using EdgeTrain with TensorFlow
-├── setup.py
-├── README.md
-├── requirements.txt
-├── LICENSE
+│   ├── EdgeTrain_example.ipynb
+│   ├── Module_testing.ipynb
 ├── .gitignore
+├── CHANGELOG.md
+├── LICENSE
+├── README.md
+├── requirements-dev.txt
+├── requirements.txt
+├── setup.py
+```
 
 ## Contributions
 You can contribute by:
 - Reporting bugs or requesting features: [GitHub Issues](https://github.com/BradleyEdelman/edgetrain/issues)
-- Improving the documentation
-- Adding new training strategies or features
 
 ## Reporting bugs or requesting features.
 Improving the documentation.
-Adding new training strategies or features (e.g., model pruning, quantization, support for additional frameworks).
-License
+
+##License
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Known Limitations (Alpha)
-The package currently supports TensorFlow only. Support for other frameworks like PyTorch is planned for future releases.
-Model pruning and quantization are future features.
-Resource usage thresholds for dynamic adjustments are in the initial phase and may require tuning based on the training setup.
+- The package currently supports TensorFlow only. Support for other frameworks, especially lightweight ones is planned for future releases.
+- Model pruning and quantization are future features.
+- Resource usage thresholds for dynamic adjustments are in the initial phase and may require tuning based on the training setup.
