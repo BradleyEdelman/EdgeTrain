@@ -93,7 +93,7 @@ You can contribute by:
 ## Reporting bugs or requesting features.
 Improving the documentation.
 
-##License
+## License
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Known Limitations (Alpha)
