@@ -1,6 +1,6 @@
 import tensorflow as tf
 from tensorflow.keras.optimizers import Adam
-from optitrain import log_usage_once, adjust_threads, adjust_batch_size, adjust_learning_rate, create_model_tf
+from edgetrain import log_usage_once, adjust_threads, adjust_batch_size, adjust_learning_rate, create_model_tf, get_edgetrain_folder
 
 def dynamic_train(train_dataset, epochs=10, batch_size=32, lr=1e-3, grad_accum=1, log_file="resource_log.csv", dynamic_adjustments=True):
     """
@@ -18,6 +18,7 @@ def dynamic_train(train_dataset, epochs=10, batch_size=32, lr=1e-3, grad_accum=1
     Returns:
     - history_list (list): A list of training history for each epoch.
     """
+    
     # Log resource usage (regardless of dynamic adjustments)
     log_usage_once(log_file, lr=lr, batch_size=batch_size, grad_accum=grad_accum, num_epoch=0)
     
@@ -30,9 +31,9 @@ def dynamic_train(train_dataset, epochs=10, batch_size=32, lr=1e-3, grad_accum=1
         
         # Adjust resources dynamically based on system usage
         if dynamic_adjustments:
-            batch_size=adjust_batch_size(batch_size=batch_size) # Adjust batch size
-            lr=adjust_learning_rate(lr=lr) # adjust learning rate
-            # grad_accum=adjust_grad_accum(grad_accum=grad_accum) # adjust gradient accumulation steps
+            batch_size=adjust_batch_size(batch_size=batch_size)
+            lr=adjust_learning_rate(lr=lr)
+            # grad_accum=adjust_grad_accum(grad_accum=grad_accum)
         else:
             # Keep default batch size and workers fixed
             batch_size=batch_size
@@ -48,11 +49,18 @@ def dynamic_train(train_dataset, epochs=10, batch_size=32, lr=1e-3, grad_accum=1
             optimizer = Adam(learning_rate=lr)
             model.compile(optimizer=optimizer, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
-            history = model.fit(train_images, train_labels, batch_size=batch_size, epochs=1)  # Train for 1 epoch at a time
+            # Train for 1 epoch at a time
+            history = model.fit(
+                train_images,
+                train_labels,
+                batch_size=batch_size,
+                epochs=1
+            )  
+            
+            # save results
             history_list.append(history.history)
         
         # Log resource usage for the current epoch
-        # print(f"EPOCH NUMBER: {epoch}")
         log_usage_once(log_file, lr=lr, batch_size=batch_size, grad_accum=grad_accum, num_epoch=epoch)
 
     return history_list

@@ -1,6 +1,6 @@
 import tensorflow as tf
 import psutil, GPUtil
-from optitrain import sys_resources
+from edgetrain import sys_resources
 
 def adjust_threads(cpu_threshold=[20, 80], gpu_threshold=[20, 80], increment=1):
     """
@@ -120,6 +120,55 @@ def adjust_learning_rate(lr, cpu_threshold=[20, 80], gpu_threshold=[20, 80], inc
 
     lr = adjusted_lr
     return lr
+
+
+def adjust_pruning(model, pruning_ratio, cpu_threshold=[20, 80], gpu_threshold=[20, 80], increment=0.05):
+    """
+    Adjusts the pruning ratio of a model based on CPU and GPU memory usage.
+
+    Parameters:
+    - model (tf.keras.Model): The current model to be pruned.
+    - pruning_ratio (float): The initial pruning ratio (fraction of weights to prune, e.g., 0.1 for 10%).
+    - cpu_threshold (list): CPU memory usage upper and lower threshold (%) to trigger adjustment.
+    - gpu_threshold (list): GPU memory usage upper and lower threshold (%) to trigger adjustment.
+    - increment (float): The amount by which to increase or decrease the pruning ratio.
+
+    Returns:
+    - pruned_model (tf.keras.Model): The pruned model.
+    - new_pruning_ratio (float): The adjusted pruning ratio.
+    """
+    import tensorflow_model_optimization as tfmot
+
+    # Monitor memory usage
+    resources = sys_resources()
+    cpu_memory_percent = resources.get('cpu_memory_percent')
+    gpu_memory_percent = resources.get('gpu_memory_percent')
+
+    # Adjust pruning ratio
+    min_pruning_ratio = 0.1
+    max_pruning_ratio = 0.8
+
+    if cpu_memory_percent > cpu_threshold[1] or gpu_memory_percent > gpu_threshold[1]:
+        print(f"High memory usage detected: CPU={cpu_memory_percent}%, GPU={gpu_memory_percent}%")
+        new_pruning_ratio = min(pruning_ratio + increment, max_pruning_ratio)  # Increase pruning ratio
+    elif cpu_memory_percent < cpu_threshold[0] and gpu_memory_percent < gpu_threshold[0]:
+        print(f"Low memory usage detected: CPU={cpu_memory_percent}%, GPU={gpu_memory_percent}%")
+        new_pruning_ratio = max(pruning_ratio - increment, min_pruning_ratio)  # Decrease pruning ratio
+    else:
+        print(f"Memory usage is under control: CPU={cpu_memory_percent}%, GPU={gpu_memory_percent}%")
+        new_pruning_ratio = pruning_ratio  # Keep pruning ratio the same
+
+    # Apply pruning to the model
+    prune_low_magnitude = tfmot.sparsity.keras.prune_low_magnitude
+    pruning_params = {
+        'pruning_schedule': tfmot.sparsity.keras.ConstantSparsity(new_pruning_ratio, begin_step=0),
+    }
+    pruned_model = prune_low_magnitude(model, **pruning_params)
+
+    print(f"Updated pruning ratio: {new_pruning_ratio}")
+
+    return pruned_model, new_pruning_ratio
+
 
 
 def adjust_grad_accum(cpu_threshold=[20, 80], gpu_memory_threshold=[50, 90], current_grad_accum=1, increment=1):

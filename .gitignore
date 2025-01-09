@@ -1,3 +1,11 @@
+# Ignore Databricks folder
+.databricks/
+
+# Ignore edgetrain folders
+models/
+logs/
+images/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

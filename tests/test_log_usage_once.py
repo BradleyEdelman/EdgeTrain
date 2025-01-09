@@ -1,38 +1,57 @@
-import pytest
-from unittest.mock import patch, mock_open
-from your_module import log_usage_once  # Replace 'your_module' with the actual module name
+import os
+import csv
+from datetime import datetime
+from unittest.mock import patch, MagicMock
+from edgetrain import log_usage_once, sys_resources
 
-# Test log_usage_once function
-def test_log_usage_once(mocker):
-    # Mock sys_resources function to return controlled values
-    mocker.patch('your_module.sys_resources', return_value={
-        "cpu_cores": 8,
-        "cpu_compute_percent": 50,
-        "cpu_memory_percent": 70,
-        "gpu_compute_percent": 60,
-        "gpu_memory_usage": 2000,
-        "gpu_memory_total": 8000,
-        "gpu_memory_percent": 40,
-        "num_gpus": 1
-    })
+def test_log_usage_once(tmpdir):
+    # Mock resource usage values
+    mock_resources = {
+        'cpu_compute_percent': 35.0,
+        'cpu_memory_percent': 40.0,
+        'gpu_compute_percent': 45.0,
+        'gpu_memory_percent': 50.0
+    }
+    
+    # Mock sys_resources to return the mock values
+    with patch('edgetrain.sys_resources', return_value=mock_resources):
+        # Create a temporary log file
+        log_file = os.path.join(tmpdir, 'test_log.csv')
 
-    # Mock file operations
-    mock_file = mock_open()
-    with patch('builtins.open', mock_file):
-        log_usage_once('test_log.csv', batch_size=32, num_workers=4, num_epoch=1)
+        # Call the function to log usage
+        lr = 0.001
+        batch_size = 32
+        grad_accum = 1
+        num_epoch = 5
+        log_usage_once(log_file, lr, batch_size, grad_accum, num_epoch)
 
-    # Assert file is written
-    mock_file.assert_called_once_with('test_log.csv', 'a', newline='')
+        # Verify the log file is created
+        assert os.path.exists(log_file), "Log file was not created."
 
-    # Extract the first write call
-    handle = mock_file()
-    handle.write.assert_any_call(','.join(map(str, [
-        '2025-01-01 12:00:00',  # Example timestamp
-        1,  # Epoch 1
-        50,  # CPU compute percent
-        70,  # CPU memory percent
-        60,  # GPU compute percent
-        40,  # GPU memory percent
-        32,  # Batch size
-        4   # Num workers
-    ])) + '\n')
+        # Read the log file and verify contents
+        with open(log_file, 'r') as f:
+            reader = csv.DictReader(f)
+            rows = list(reader)
+            
+            # Check if the header is correct
+            expected_header = [
+                'Timestamp', 'Epoch #', 'CPU Usage (%)', 'CPU RAM (%)',
+                'GPU RAM (%)', 'GPU Usage (%)',
+                'Batch Size', 'Learning Rate', 'Grad Accum'
+            ]
+            assert reader.fieldnames == expected_header, "Log file header is incorrect."
+
+            # Check if the log entry contains expected values
+            assert len(rows) == 1, "Log file should contain one entry."
+            log_entry = rows[0]
+            assert log_entry['Epoch #'] == str(num_epoch), "Epoch number mismatch."
+            assert log_entry['Batch Size'] == str(batch_size), "Batch size mismatch."
+            assert log_entry['Learning Rate'] == str(lr), "Learning rate mismatch."
+            assert log_entry['Grad Accum'] == str(grad_accum), "Grad accumulation mismatch."
+
+            # Validate timestamp format
+            try:
+                datetime.strptime(log_entry['Timestamp'], "%Y-%m-%d %H:%M:%S")
+            except ValueError:
+                assert False, "Timestamp format is incorrect."
+
