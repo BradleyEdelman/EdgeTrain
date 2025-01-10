@@ -24,8 +24,6 @@ def adjust_batch_size(batch_size, cpu_threshold=[20, 80], gpu_threshold=[20, 80]
     min_batch_size = 8
     max_batch_size = 128
 
-    print(cpu_memory_percent, gpu_memory_percent)
-
     if cpu_memory_percent > cpu_threshold[1] or gpu_memory_percent > gpu_threshold[1]:
         print(f"High memory usage detected: CPU={cpu_memory_percent}%, GPU={gpu_memory_percent}%")
         batch_size_new = max(batch_size - increment, min_batch_size) # Reduce batch_size if above threshold
