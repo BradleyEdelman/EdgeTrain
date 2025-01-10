@@ -30,7 +30,7 @@ EdgeTrain is highly customizable. You can easily modify:
 You can install EdgeTrain via pip:
 
 ```bash
-pip install edgetrain
+pip install https://github.com/BradleyEdelman/EdgeTrain/releases/download/v0.1.0-alpha/edgetrain-0.1.0a0.tar.gz
 ```
 
 Alternatively, clone the repository and install manually:
@@ -76,7 +76,6 @@ EdgeTrain/
 │   ├── test_dynamic_train.py
 ├── example_notebooks/
 │   ├── EdgeTrain_example.ipynb
-│   ├── Module_testing.ipynb
 ├── .gitignore
 ├── CHANGELOG.md
 ├── LICENSE
