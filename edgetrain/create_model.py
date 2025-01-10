@@ -1,7 +1,5 @@
 import tensorflow as tf
 from tensorflow.keras import layers, models
-import torch.nn as nn
-import torch.nn.functional as F
 
 def create_model_tf(input_shape, model_path=None):
     """
@@ -49,6 +47,9 @@ def create_model_torch(input_shape, model_path=None):
     Returns:
     - model: A compiled pytorch model.
     """
+
+    import torch.nn as nn
+    import torch.nn.functional as F
 
     class CNN(nn.Module):
         def __init__(self):
