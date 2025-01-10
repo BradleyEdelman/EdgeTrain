@@ -1,7 +1,7 @@
 # EdgeTrain: Automated Resource Adjustment for Efficient Edge AI Training  
 **Version: 0.1.1-alpha**
 
-EdgeTrain is a Python package designed to dynamically adjust training parameters and strategies based on CPU and GPU performance. It optimizes the training process by adjusting batch size and learning rate to ensure efficient training without overutilizing or underutilizing available resources. This package is specifically designed to reduce memory usage for model training on edge AI devices, laptops or other setups that have limited memory.  
+EdgeTrain is a Python package designed to dynamically adjust deep learning training parameters and strategies based on CPU and GPU performance. It optimizes the training process by adjusting batch size and learning rate to ensure efficient training without overutilizing or underutilizing available resources. This package is specifically designed to reduce memory usage for model training on edge AI devices, laptops or other setups that have limited memory.  
 
 ## Features
 
