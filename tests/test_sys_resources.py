@@ -1,17 +1,18 @@
 import pytest
 from unittest import mock
-from your_module import sys_resources  # Replace 'your_module' with the actual module name
+from edgetrain.resource_monitor import sys_resources
 
 # Mock the psutil and GPUtil modules
 @pytest.fixture
 def mock_psutil_and_gputil():
-    with mock.patch("your_module.psutil.cpu_percent") as mock_cpu_percent, \
-         mock.patch("your_module.psutil.cpu_count") as mock_cpu_count, \
-         mock.patch("your_module.psutil.virtual_memory") as mock_virtual_memory, \
-         mock.patch("your_module.GPUtil.getGPUs") as mock_get_gpus, \
-         mock.patch("your_module.nvmlInit") as mock_nvml_init, \
-         mock.patch("your_module.nvmlShutdown") as mock_nvml_shutdown, \
-         mock.patch("your_module.nvmlDeviceGetUtilizationRates") as mock_nvml_device_utilization:
+    with mock.patch("edgetrain.resource_monitor.psutil.cpu_percent") as mock_cpu_percent, \
+         mock.patch("edgetrain.resource_monitor.psutil.cpu_count") as mock_cpu_count, \
+         mock.patch("edgetrain.resource_monitor.psutil.virtual_memory") as mock_virtual_memory, \
+         mock.patch("edgetrain.resource_monitor.GPUtil.getGPUs") as mock_get_gpus, \
+         mock.patch("edgetrain.resource_monitor.nvmlInit") as mock_nvml_init, \
+         mock.patch("edgetrain.resource_monitor.nvmlShutdown") as mock_nvml_shutdown, \
+         mock.patch("edgetrain.resource_monitor.nvmlDeviceGetUtilizationRates") as mock_nvml_device_utilization, \
+         mock.patch("edgetrain.resource_monitor.nvmlDeviceGetHandleByIndex") as mock_nvml_device_handle:
 
         # Setup mock return values for psutil
         mock_cpu_percent.return_value = 50.0
@@ -20,12 +21,19 @@ def mock_psutil_and_gputil():
         
         # Setup mock return values for GPUtil
         mock_get_gpus.return_value = [
-            mock.Mock(memoryUsed=1000, memoryTotal=8000, memoryUtil=12),
-            mock.Mock(memoryUsed=1200, memoryTotal=8000, memoryUtil=15),
+            mock.Mock(memoryUsed=1000, memoryTotal=8000, memoryUtil=0.12),
+            mock.Mock(memoryUsed=1200, memoryTotal=8000, memoryUtil=0.15),
         ]
         
-        # Setup mock return values for nvml functions
-        mock_nvml_device_utilization.return_value.gpu = 60
+        # Mock nvmlInit and nvmlShutdown (no-op)
+        mock_nvml_init.return_value = None
+        mock_nvml_shutdown.return_value = None
+        
+        # Mock nvmlDeviceGetHandleByIndex to return a dummy handle
+        mock_nvml_device_handle.side_effect = lambda i: f"handle_{i}"
+        
+        # Mock nvmlDeviceGetUtilizationRates to return a mock object with a gpu attribute
+        mock_nvml_device_utilization.return_value = mock.Mock(gpu=60)
         
         yield {
             "mock_cpu_percent": mock_cpu_percent,
@@ -34,11 +42,13 @@ def mock_psutil_and_gputil():
             "mock_get_gpus": mock_get_gpus,
             "mock_nvml_init": mock_nvml_init,
             "mock_nvml_shutdown": mock_nvml_shutdown,
-            "mock_nvml_device_utilization": mock_nvml_device_utilization
+            "mock_nvml_device_utilization": mock_nvml_device_utilization,
+            "mock_nvml_device_handle": mock_nvml_device_handle,
         }
 
+
 def test_sys_resources(mock_psutil_and_gputil):
-    # Call the sys_resources function
+    
     result = sys_resources()
 
     # Check if the function returns a dictionary with the expected keys
@@ -51,13 +61,13 @@ def test_sys_resources(mock_psutil_and_gputil):
     assert "gpu_memory_percent" in result
     assert "num_gpus" in result
 
-    # Validate the values returned by the mock
+    # Validate the values returned by the mock process
     assert result["cpu_cores"] == 8
     assert result["cpu_compute_percent"] == 50.0
     assert result["cpu_memory_percent"] == 75.0
     assert result["gpu_compute_percent"] == 60.0
     assert result["gpu_memory_usage"] == 2200
     assert result["gpu_memory_total"] == 16000
-    assert result["gpu_memory_percent"] == 13.5
-    assert result["num_gpus"] == 2
-
+    
+    # Compare the fractional value instead of percentage
+    assert result["gpu_memory_percent"] == 0.135

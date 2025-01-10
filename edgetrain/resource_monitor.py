@@ -53,7 +53,7 @@ def sys_resources():
 
 
 # Function to log resource usage and batch size
-def log_usage_once(log_file, lr, batch_size, grad_accum, num_epoch=0):
+def log_usage_once(log_file, lr, batch_size, grad_accum, num_epoch=0, resources=None):
     """
     Log GPU and CPU resource usage once.
     
@@ -80,7 +80,8 @@ def log_usage_once(log_file, lr, batch_size, grad_accum, num_epoch=0):
             writer.writerow(header)
 
     # Get resource usage
-    resources = sys_resources()
+    if resources is None:
+        resources = sys_resources()
     cpu_compute_percent=resources.get('cpu_compute_percent')
     cpu_memory_percent = resources.get('cpu_memory_percent')
     gpu_compute_percent = resources.get('gpu_compute_percent') 
