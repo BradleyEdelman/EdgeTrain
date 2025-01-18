@@ -96,9 +96,6 @@ EdgeTrain/
 You can contribute by:
 - Reporting bugs or requesting features: [GitHub Issues](https://github.com/BradleyEdelman/edgetrain/issues)
 
-## Reporting bugs or requesting features.
-Improving the documentation.
-
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
 
