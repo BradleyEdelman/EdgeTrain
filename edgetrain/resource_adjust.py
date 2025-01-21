@@ -111,9 +111,11 @@ def adjust_pruning(model, pruning_ratio, cpu_threshold=[20, 80], gpu_threshold=[
     if cpu_memory_percent > cpu_threshold[1] or gpu_memory_percent > gpu_threshold[1]:
         print(f"High memory usage detected: CPU={cpu_memory_percent}%, GPU={gpu_memory_percent}%")
         new_pruning_ratio = min(pruning_ratio + increment, max_pruning_ratio)  # Increase pruning ratio
+
     elif cpu_memory_percent < cpu_threshold[0] and gpu_memory_percent < gpu_threshold[0]:
         print(f"Low memory usage detected: CPU={cpu_memory_percent}%, GPU={gpu_memory_percent}%")
         new_pruning_ratio = max(pruning_ratio - increment, min_pruning_ratio)  # Decrease pruning ratio
+        
     else:
         print(f"Memory usage is under control: CPU={cpu_memory_percent}%, GPU={gpu_memory_percent}%")
         new_pruning_ratio = pruning_ratio  # Keep pruning ratio the same

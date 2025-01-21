@@ -1,6 +1,9 @@
 # Ignore Databricks folder
 .databricks/
 
+# virtual environment
+venv/
+
 # Ignore edgetrain folders
 models/
 logs/

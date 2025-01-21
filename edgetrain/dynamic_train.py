@@ -1,6 +1,6 @@
 import tensorflow as tf
 from tensorflow.keras.optimizers import Adam
-from edgetrain import log_usage_once, adjust_threads, adjust_batch_size, adjust_learning_rate, create_model_tf, get_edgetrain_folder
+from edgetrain import log_usage_once, adjust_batch_size, adjust_learning_rate, create_model_tf, sys_resources
 
 def dynamic_train(train_dataset, epochs=10, batch_size=32, lr=1e-3, grad_accum=1, log_file="resource_log.csv", dynamic_adjustments=True):
     """
@@ -25,10 +25,22 @@ def dynamic_train(train_dataset, epochs=10, batch_size=32, lr=1e-3, grad_accum=1
     # Create the MirroredStrategy for distributed training
     strategy = tf.distribute.MirroredStrategy()
 
+    # Initialize a few key variables
     history_list = []
+    prev_accuracy = 0.0
+    prev_loss = 0.0
+
     for epoch in range(epochs):
         print(f"Epoch {epoch + 1}/{epochs}")
         
+        # Calculate performance and usage scores
+        scores = calculate_scores(system_resources, current_accuracy, previous_accuracy, current_loss, previous_loss)
+
+        priorities = calculat_priorities
+
+        train_param = adjust_param
+
+
         # Adjust resources dynamically based on system usage
         if dynamic_adjustments:
             batch_size=adjust_batch_size(batch_size=batch_size)
