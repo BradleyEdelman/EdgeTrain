@@ -12,7 +12,7 @@ setup(
         "pandas>=1.5.0",
         "numpy>=1.24.0",
         "pynvml>=8.0.0",
-	"torch>=2.5.1",
+	    "torch>=2.5.1",
     ],
     extras_require={
 	'dev': [

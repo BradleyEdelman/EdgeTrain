@@ -1,8 +1,16 @@
 import tensorflow as tf
 from tensorflow.keras.optimizers import Adam
-from edgetrain import log_usage_once, adjust_batch_size, adjust_learning_rate, create_model_tf, sys_resources
+from edgetrain import log_usage_once, create_model_tf, compute_scores, define_priorities, adjust_training_parameters
 
-def dynamic_train(train_dataset, epochs=10, batch_size=32, lr=1e-3, grad_accum=1, log_file="resource_log.csv", dynamic_adjustments=True):
+def dynamic_train(
+    train_dataset, 
+    epochs=10, 
+    batch_size=32, 
+    lr=1e-3, 
+    pruning_ratio=0.2, 
+    log_file="resource_log.csv", 
+    dynamic_adjustments=True
+):
     """
     Train the model with optional dynamic resource adjustment.
     
@@ -11,7 +19,7 @@ def dynamic_train(train_dataset, epochs=10, batch_size=32, lr=1e-3, grad_accum=1
     - epochs (int): Number of epochs to train the model.
     - batch_size (int): The base batch size to use.
     - lr (float): The initial learning rate.
-    - grad_accum (int): The number of gradient accumulation steps.
+    - pruning_ratio (float): Initial pruning ratio (for dynamic adjustment).
     - log_file (str): The path to the log file where resource usage is saved.
     - dynamic_adjustments (bool): A flag to control if dynamic adjustments are enabled (True) or not (False).
     
@@ -19,61 +27,65 @@ def dynamic_train(train_dataset, epochs=10, batch_size=32, lr=1e-3, grad_accum=1
     - history_list (list): A list of training history for each epoch.
     """
     
-    # Log resource usage (regardless of dynamic adjustments)
-    log_usage_once(log_file, lr=lr, batch_size=batch_size, grad_accum=grad_accum, num_epoch=0)
-    
+    # Log initial resource usage
+    log_usage_once(log_file, lr=lr, batch_size=batch_size, num_epoch=0)
+
     # Create the MirroredStrategy for distributed training
     strategy = tf.distribute.MirroredStrategy()
 
-    # Initialize a few key variables
+    # Initialize variables
     history_list = []
     prev_accuracy = 0.0
-    prev_loss = 0.0
+
+    # Create the model once
+    train_images, train_labels = train_dataset['images'], train_dataset['labels']
+    with strategy.scope():
+        model = create_model_tf(input_shape=train_images[0].shape)
 
     for epoch in range(epochs):
         print(f"Epoch {epoch + 1}/{epochs}")
-        
-        # Calculate performance and usage scores
-        scores = calculate_scores(system_resources, current_accuracy, previous_accuracy, current_loss, previous_loss)
 
-        priorities = calculat_priorities
-
-        train_param = adjust_param
-
-
-        # Adjust resources dynamically based on system usage
-        if dynamic_adjustments:
-            batch_size=adjust_batch_size(batch_size=batch_size)
-            lr=adjust_learning_rate(lr=lr)
-            # grad_accum=adjust_grad_accum(grad_accum=grad_accum)
-        else:
-            # Keep default batch size and workers fixed
-            batch_size=batch_size
-            lr=lr
-            grad_accum=grad_accum
-        
-        # Deploy training
-        train_images, train_labels = train_dataset['images'], train_dataset['labels']
+        # Compile the model with the current parameters
         with strategy.scope():
-            model = create_model_tf(input_shape=train_images[0].shape)
-            
-            # Create optimizer with learning rate
             optimizer = Adam(learning_rate=lr)
             model.compile(optimizer=optimizer, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
-            # Train for 1 epoch at a time
-            history = model.fit(
-                train_images,
-                train_labels,
-                batch_size=batch_size,
-                epochs=1
-            )  
-            
-            # save results
-            history_list.append(history.history)
+        # Train for 1 epoch
+        history = model.fit(
+            train_images,
+            train_labels,
+            batch_size=batch_size,
+            epochs=1
+        )  
         
+        # Save training history
+        history_list.append(history.history)
+        
+        # Update accuracy
+        curr_accuracy = history.history['accuracy'][-1]
+
         # Log resource usage for the current epoch
-        log_usage_once(log_file, lr=lr, batch_size=batch_size, grad_accum=grad_accum, num_epoch=epoch)
+        log_usage_once(log_file, lr=lr, batch_size=batch_size, num_epoch=epoch + 1)
+
+        if dynamic_adjustments:
+            # Calculate performance and resource usage scores
+            normalized_scores = compute_scores(prev_accuracy, curr_accuracy)
+
+            # Define priority values based on normalized scores
+            priority_value = define_priorities(normalized_scores)
+
+            # Adjust training parameters
+            batch_size, pruning_ratio, lr = adjust_training_parameters(
+                priority_scores=priority_value,
+                batch_size=batch_size,
+                pruning_ratio=pruning_ratio,
+                lr=lr,
+                accuracy_score=curr_accuracy
+            )
+
+            print(f"Adjusted parameters for next epoch: batch_size={batch_size}, pruning_ratio={pruning_ratio}, learning_rate={lr}")
+
+        # Update previous accuracy
+        prev_accuracy = curr_accuracy
 
     return history_list
-

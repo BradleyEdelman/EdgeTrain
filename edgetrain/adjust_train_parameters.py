@@ -1,45 +1,58 @@
-def adjust_training_parameters(priority_scores, batch_size, pruning_ratio, lr, system_resources):
+from edgetrain import sys_resources
+
+def adjust_training_parameters(priority_value, batch_size, pruning_ratio, lr, accuracy_score):
     """
-    Adjust the training parameters (batch size, pruning ratio, learning rate) based on the highest priority score.
+    Adjust the training parameters (batch size, pruning ratio, learning rate) based on the highest priority score,
+    moving parameters in the opposite direction if resource usage or accuracy trends improve.
     
     Parameters:
     - priority_scores (dict): Dictionary containing priority scores for batch size, pruning, and learning rate.
     - batch_size (int): Current batch size.
     - pruning_ratio (float): Current pruning ratio.
     - lr (float): Current learning rate.
-    - system_resources (dict): System resource usage data (CPU and GPU).
+    - accuracy_score (float): Current accuracy score from the latest epoch (0-1).
     
     Returns:
     - adjusted_batch_size (int): Adjusted batch size.
     - adjusted_pruning_ratio (float): Adjusted pruning ratio.
     - adjusted_lr (float): Adjusted learning rate.
     """
+
+    # Get system resources
+    resources = sys_resources()
+
     # Determine which parameter has the highest priority score
     highest_priority = max(priority_scores, key=priority_scores.get)
     
     # Adjust the parameter based on system resources and highest priority score
     if highest_priority == "batch_size":
-        # Only adjust batch size if memory usage is high
-        if system_resources["cpu_memory_percent"] > 75 or system_resources["gpu_memory_percent"] > 75:
+        # Adjust batch size based on memory usage
+        if resources["cpu_memory_percent"] > 75 or resources["gpu_memory_percent"] > 75:
             adjusted_batch_size = max(16, batch_size // 2)  # Halve batch size
+        elif resources["cpu_memory_percent"] < 50 and resources["gpu_memory_percent"] < 50:
+            adjusted_batch_size = min(128, batch_size * 2)  # Double batch size
         else:
             adjusted_batch_size = batch_size
         adjusted_pruning_ratio = pruning_ratio
         adjusted_lr = lr
     
     elif highest_priority == "pruning":
-        # Adjust pruning ratio if memory usage is high
-        if system_resources["cpu_memory_percent"] > 75 or system_resources["gpu_memory_percent"] > 75:
+        # Adjust pruning ratio based on memory usage
+        if resources["cpu_memory_percent"] > 75 or resources["gpu_memory_percent"] > 75:
             adjusted_pruning_ratio = min(0.8, pruning_ratio + 0.1)  # Increase pruning
+        elif resources["cpu_memory_percent"] < 50 and resources["gpu_memory_percent"] < 50:
+            adjusted_pruning_ratio = max(0.1, pruning_ratio - 0.1)  # Decrease pruning
         else:
             adjusted_pruning_ratio = pruning_ratio
         adjusted_batch_size = batch_size
         adjusted_lr = lr
     
     elif highest_priority == "learning_rate":
-        # Adjust learning rate based on accuracy stagnation
-        if accuracy_stagnation_score > 0.05:  # Example threshold for stagnation
-            adjusted_lr = max(1e-5, lr * 0.5)  # Reduce learning rate if stagnation detected
+        # Adjust learning rate based on accuracy score
+        if accuracy_score < 0.05:  # Example threshold for low accuracy
+            adjusted_lr = max(1e-5, lr * 0.5)  # Reduce learning rate
+        elif accuracy_score > 0.95:  # Example threshold for high accuracy
+            adjusted_lr = min(1e-2, lr * 1.2)  # Slightly increase learning rate
         else:
             adjusted_lr = lr
         adjusted_batch_size = batch_size

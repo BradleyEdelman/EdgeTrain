@@ -53,7 +53,7 @@ def sys_resources():
 
 
 # Function to log resource usage and batch size
-def log_usage_once(log_file, lr, batch_size, grad_accum, num_epoch=0, resources=None):
+def log_usage_once(log_file, lr, batch_size, num_epoch=0, resources=None):
     """
     Log GPU and CPU resource usage once.
     
@@ -61,7 +61,6 @@ def log_usage_once(log_file, lr, batch_size, grad_accum, num_epoch=0, resources=
     - log_file (str): Path to the log file.
     - lr (float): Learning rate.
     - batch_size (int): Current batch size.
-    - grad_accum (int): Gradient accumulation steps.
     - num_epoch (int, optional): Current epoch number. Default is 0.
     """
     
@@ -97,8 +96,7 @@ def log_usage_once(log_file, lr, batch_size, grad_accum, num_epoch=0, resources=
         gpu_compute_percent,
         gpu_memory_percent,
         batch_size,
-        lr,
-        grad_accum
+        lr
     ]
 
     # Append log entry to the file

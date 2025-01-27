@@ -1,4 +1,4 @@
-def define_priorities(memory_usage_score, accuracy_stagnation_score, loss_stagnation_score, user_priorities=None):
+def define_priorities(normalized_scores, user_priorities=None):
     """
     Calculate priority scores for adjustments based on resource usage, accuracy, and loss.
     
@@ -9,29 +9,24 @@ def define_priorities(memory_usage_score, accuracy_stagnation_score, loss_stagna
     - user_priorities (dict): Optional user-defined priorities for resource conservation, accuracy, and loss.
     
     Returns:
-    - priority_scores (dict): A dictionary of priority scores for batch size, pruning, and learning rate.
+    - priority_value (dict): A dictionary of priority scores for batch size, pruning, and learning rate.
     """
     # Default weights if user priorities are not provided
     default_priorities = {
-        "resource_conservation": 0.4,
+        "batch_size_adjustment": 0.3,
+        "pruning_adjustment": 0.3,
         "accuracy_improvement": 0.4,
-        "loss_reduction": 0.2,
     }
     
     # Use user-defined priorities if available
-    if user_priorities:
-        priorities = user_priorities
-    else:
-        priorities = default_priorities
+    priorities = user_priorities if user_priorities else default_priorities
 
     # Calculate weighted priority scores
-    priority_scores = {
-        "batch_size": priorities["resource_conservation"] * memory_usage_score,
-        "pruning": priorities["resource_conservation"] * memory_usage_score,
-        "learning_rate": (
-            priorities["accuracy_improvement"] * accuracy_stagnation_score +
-            priorities["loss_reduction"] * loss_stagnation_score
-        ),
+    priority_value = {
+        "batch_size": priorities["batch_size_adjustment"] * normalized_scores.get('memory_score'),
+        "pruning": (priorities["pruning_adjustment"] * normalized_scores.get('memory_score') +
+                    priorities["accuracy_improvement"] * normalized_scores.get('accuracy_score')) / 2,
+        "learning_rate": (priorities["accuracy_improvement"] * normalized_scores.get('accuracy_score')),
     }
     
-    return priority_scores
+    return priority_value
