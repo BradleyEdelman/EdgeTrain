@@ -53,7 +53,7 @@ def sys_resources():
 
 
 # Function to log resource usage and batch size
-def log_usage_once(log_file, lr, batch_size, num_epoch=0, resources=None):
+def log_usage_once(log_file, batch_size, pruning, lr, normalize_scores, priority_value, num_epoch=0, resources=None):
     """
     Log GPU and CPU resource usage once.
     
@@ -74,10 +74,13 @@ def log_usage_once(log_file, lr, batch_size, num_epoch=0, resources=None):
             header = [
                 'Timestamp', 'Epoch #', 'CPU Usage (%)', 'CPU RAM (%)',
                  'GPU RAM (%)', 'GPU Usage (%)',
-                 'Batch Size', 'Learning Rate', 'Grad Accum'
+                 'Mem Score', 'Acc Score',
+                 'Priority Batch Size', 'Priority Pruning', 'Priority Learning Rate',
+                 'Batch Size', 'Pruning', 'Learning Rate', 
             ]
             writer.writerow(header)
 
+    
     # Get resource usage
     if resources is None:
         resources = sys_resources()
@@ -85,7 +88,13 @@ def log_usage_once(log_file, lr, batch_size, num_epoch=0, resources=None):
     cpu_memory_percent = resources.get('cpu_memory_percent')
     gpu_compute_percent = resources.get('gpu_compute_percent') 
     gpu_memory_percent = resources.get('gpu_memory_percent')
-    
+
+    memory_score = normalize_scores.get('memory_score')
+    accuracy_score = normalize_scores.get('accuracy_score')
+    batch_size_priority_value = priority_value.get('batch_size')
+    pruning_priority_value = priority_value.get('pruning')
+    learning_rate_priority_value = priority_value.get('learning_rate')
+
     
     # Prepare log entry
     log_entry = [
@@ -95,7 +104,13 @@ def log_usage_once(log_file, lr, batch_size, num_epoch=0, resources=None):
         cpu_memory_percent,
         gpu_compute_percent,
         gpu_memory_percent,
+        memory_score,
+        accuracy_score,
+        batch_size_priority_value,
+        pruning_priority_value,
+        learning_rate_priority_value,
         batch_size,
+        pruning,
         lr
     ]
 

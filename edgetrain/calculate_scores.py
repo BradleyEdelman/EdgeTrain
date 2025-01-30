@@ -1,6 +1,6 @@
 from edgetrain import sys_resources
 
-def compute_scores(previous_accuracy, current_accuracy, score_ranges=None):
+def compute_scores(previous_accuracy, current_accuracy, score_ranges=None, resources=None):
     """
     Compute memory, accuracy, and loss scores, and normalize them.
     
@@ -14,7 +14,8 @@ def compute_scores(previous_accuracy, current_accuracy, score_ranges=None):
     """
 
     # Get system resources
-    resources = sys_resources()
+    if resources is None:
+        resources = sys_resources()
     
     # Default score ranges
     if score_ranges is None:
@@ -59,7 +60,7 @@ def normalize_scores(raw_scores, score_ranges):
     normalized_scores = {}
     
     for score_name, score_value in raw_scores.items():
-        score_range = score_ranges.get(score_name, 1)  # Default range is 1 if not specified
+        score_range = score_ranges.get(f'{score_name}_range', 1)  # Default range is 1 if not specified
         normalized_score = score_value / score_range
         normalized_scores[score_name] = normalized_score
     

@@ -1,12 +1,12 @@
 from edgetrain import sys_resources
 
-def adjust_training_parameters(priority_value, batch_size, pruning_ratio, lr, accuracy_score):
+def adjust_training_parameters(priority_values, batch_size, pruning_ratio, lr, accuracy_score, resources=None):
     """
     Adjust the training parameters (batch size, pruning ratio, learning rate) based on the highest priority score,
     moving parameters in the opposite direction if resource usage or accuracy trends improve.
     
     Parameters:
-    - priority_scores (dict): Dictionary containing priority scores for batch size, pruning, and learning rate.
+    - priority_values (dict): Dictionary containing priority scores for batch size, pruning, and learning rate.
     - batch_size (int): Current batch size.
     - pruning_ratio (float): Current pruning ratio.
     - lr (float): Current learning rate.
@@ -19,10 +19,11 @@ def adjust_training_parameters(priority_value, batch_size, pruning_ratio, lr, ac
     """
 
     # Get system resources
-    resources = sys_resources()
+    if resources is None:
+        resources = sys_resources()
 
     # Determine which parameter has the highest priority score
-    highest_priority = max(priority_scores, key=priority_scores.get)
+    highest_priority = max(priority_values, key=priority_values.get)
     
     # Adjust the parameter based on system resources and highest priority score
     if highest_priority == "batch_size":

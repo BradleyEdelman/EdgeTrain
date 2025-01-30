@@ -1,5 +1,6 @@
-# Ignore Databricks folder
+# Ignore Databricks, vscode
 .databricks/
+.vscode/
 
 # virtual environment
 venv/

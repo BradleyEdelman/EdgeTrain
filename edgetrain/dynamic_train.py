@@ -7,7 +7,7 @@ def dynamic_train(
     epochs=10, 
     batch_size=32, 
     lr=1e-3, 
-    pruning_ratio=0.2, 
+    pruning=0.2, 
     log_file="resource_log.csv", 
     dynamic_adjustments=True
 ):
@@ -28,7 +28,9 @@ def dynamic_train(
     """
     
     # Log initial resource usage
-    log_usage_once(log_file, lr=lr, batch_size=batch_size, num_epoch=0)
+    normalized_scores  = {"memory_score": 0, "accuracy_score": 0}
+    priority_value = {"batch_size": 0, "pruning": 0, "learning_rate": 0,}
+    log_usage_once(log_file, batch_size, pruning, lr, normalized_scores, priority_value, num_epoch=0, resources=None)
 
     # Create the MirroredStrategy for distributed training
     strategy = tf.distribute.MirroredStrategy()
@@ -64,9 +66,6 @@ def dynamic_train(
         # Update accuracy
         curr_accuracy = history.history['accuracy'][-1]
 
-        # Log resource usage for the current epoch
-        log_usage_once(log_file, lr=lr, batch_size=batch_size, num_epoch=epoch + 1)
-
         if dynamic_adjustments:
             # Calculate performance and resource usage scores
             normalized_scores = compute_scores(prev_accuracy, curr_accuracy)
@@ -75,15 +74,21 @@ def dynamic_train(
             priority_value = define_priorities(normalized_scores)
 
             # Adjust training parameters
-            batch_size, pruning_ratio, lr = adjust_training_parameters(
-                priority_scores=priority_value,
+            adjusted_batch_size, adjusted_pruning_ratio, adjusted_lr = adjust_training_parameters(
+                priority_values=priority_value,
                 batch_size=batch_size,
-                pruning_ratio=pruning_ratio,
+                pruning_ratio=pruning,
                 lr=lr,
                 accuracy_score=curr_accuracy
             )
+            batch_size = adjusted_batch_size
+            pruning = adjusted_pruning_ratio
+            lr = adjusted_lr
 
-            print(f"Adjusted parameters for next epoch: batch_size={batch_size}, pruning_ratio={pruning_ratio}, learning_rate={lr}")
+            print(f"Adjusted parameters for next epoch: batch_size={batch_size}, pruning_ratio={pruning}, learning_rate={lr}")
+
+        # Log resource usage for the current epoch
+        log_usage_once(log_file, batch_size, pruning, lr, normalized_scores, priority_value, num_epoch=epoch + 1, resources=None)
 
         # Update previous accuracy
         prev_accuracy = curr_accuracy

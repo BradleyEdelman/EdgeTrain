@@ -7,7 +7,9 @@ print(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'edgetrain')
 
 # Import modules from scaleml
 from edgetrain.resource_monitor import sys_resources, log_usage_once
-from edgetrain.resource_adjust import adjust_threads, adjust_batch_size, adjust_grad_accum, adjust_learning_rate
+from edgetrain.calculate_scores import compute_scores, normalize_scores
+from edgetrain.calculate_priorities import define_priorities
+from edgetrain.adjust_train_parameters import adjust_training_parameters
 from edgetrain.edgetrain_folder import get_edgetrain_folder
 from edgetrain.train_visualize import log_usage_plot, log_train_time, training_history_plot
 from edgetrain.create_model import create_model_tf, create_model_torch
