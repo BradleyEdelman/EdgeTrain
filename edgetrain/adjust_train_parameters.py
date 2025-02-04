@@ -1,20 +1,18 @@
 from edgetrain import sys_resources
 
-def adjust_training_parameters(priority_values, batch_size, pruning_ratio, lr, accuracy_score, resources=None):
+def adjust_training_parameters(priority_values, batch_size, lr, accuracy_score, resources=None):
     """
-    Adjust the training parameters (batch size, pruning ratio, learning rate) based on the highest priority score,
+    Adjust the training parameters (batch size, learning rate) based on the highest priority score,
     moving parameters in the opposite direction if resource usage or accuracy trends improve.
     
     Parameters:
     - priority_values (dict): Dictionary containing priority scores for batch size, pruning, and learning rate.
     - batch_size (int): Current batch size.
-    - pruning_ratio (float): Current pruning ratio.
     - lr (float): Current learning rate.
     - accuracy_score (float): Current accuracy score from the latest epoch (0-1).
     
     Returns:
     - adjusted_batch_size (int): Adjusted batch size.
-    - adjusted_pruning_ratio (float): Adjusted pruning ratio.
     - adjusted_lr (float): Adjusted learning rate.
     """
 
@@ -34,18 +32,6 @@ def adjust_training_parameters(priority_values, batch_size, pruning_ratio, lr, a
             adjusted_batch_size = min(128, batch_size * 2)  # Double batch size
         else:
             adjusted_batch_size = batch_size
-        adjusted_pruning_ratio = pruning_ratio
-        adjusted_lr = lr
-    
-    elif highest_priority == "pruning":
-        # Adjust pruning ratio based on memory usage
-        if resources["cpu_memory_percent"] > 75 or resources["gpu_memory_percent"] > 75:
-            adjusted_pruning_ratio = min(0.8, pruning_ratio + 0.1)  # Increase pruning
-        elif resources["cpu_memory_percent"] < 50 and resources["gpu_memory_percent"] < 50:
-            adjusted_pruning_ratio = max(0.1, pruning_ratio - 0.1)  # Decrease pruning
-        else:
-            adjusted_pruning_ratio = pruning_ratio
-        adjusted_batch_size = batch_size
         adjusted_lr = lr
     
     elif highest_priority == "learning_rate":
@@ -57,6 +43,5 @@ def adjust_training_parameters(priority_values, batch_size, pruning_ratio, lr, a
         else:
             adjusted_lr = lr
         adjusted_batch_size = batch_size
-        adjusted_pruning_ratio = pruning_ratio
     
-    return adjusted_batch_size, adjusted_pruning_ratio, adjusted_lr
+    return adjusted_batch_size, adjusted_lr

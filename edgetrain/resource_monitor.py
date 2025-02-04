@@ -1,4 +1,4 @@
-import psutil, GPUtil, time, csv
+import psutil, GPUtil, csv
 from datetime import datetime
 from pynvml import nvmlInit, nvmlDeviceGetHandleByIndex, nvmlDeviceGetUtilizationRates, nvmlShutdown
 
@@ -53,7 +53,7 @@ def sys_resources():
 
 
 # Function to log resource usage and batch size
-def log_usage_once(log_file, batch_size, pruning, lr, normalize_scores, priority_value, num_epoch=0, resources=None):
+def log_usage_once(log_file, pruning, batch_size, lr, normalize_scores, priority_value, num_epoch=0, resources=None):
     """
     Log GPU and CPU resource usage once.
     
@@ -75,8 +75,8 @@ def log_usage_once(log_file, batch_size, pruning, lr, normalize_scores, priority
                 'Timestamp', 'Epoch #', 'CPU Usage (%)', 'CPU RAM (%)',
                  'GPU RAM (%)', 'GPU Usage (%)',
                  'Mem Score', 'Acc Score',
-                 'Priority Batch Size', 'Priority Pruning', 'Priority Learning Rate',
-                 'Batch Size', 'Pruning', 'Learning Rate', 
+                 'Priority Batch Size', 'Priority Learning Rate',
+                 'Pruning', 'Batch Size', 'Learning Rate', 
             ]
             writer.writerow(header)
 
@@ -92,7 +92,6 @@ def log_usage_once(log_file, batch_size, pruning, lr, normalize_scores, priority
     memory_score = normalize_scores.get('memory_score')
     accuracy_score = normalize_scores.get('accuracy_score')
     batch_size_priority_value = priority_value.get('batch_size')
-    pruning_priority_value = priority_value.get('pruning')
     learning_rate_priority_value = priority_value.get('learning_rate')
 
     
@@ -107,10 +106,9 @@ def log_usage_once(log_file, batch_size, pruning, lr, normalize_scores, priority
         memory_score,
         accuracy_score,
         batch_size_priority_value,
-        pruning_priority_value,
         learning_rate_priority_value,
-        batch_size,
         pruning,
+        batch_size,
         lr
     ]
 

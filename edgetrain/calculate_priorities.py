@@ -3,9 +3,8 @@ def define_priorities(normalized_scores, user_priorities=None):
     Calculate priority scores for adjustments based on resource usage, accuracy, and loss.
     
     Parameters:
-    - memory_usage_score (float): Score indicating memory usage pressure (0-1).
-    - accuracy_stagnation_score (float): Score indicating stagnation in accuracy improvement (0-1).
-    - loss_stagnation_score (float): Score indicating stagnation in loss reduction (0-1).
+    - memory_score (float): Score indicating memory usage pressure (0-100).
+    - accuracy_score (float): Score indicating stagnation in accuracy improvement (0-1).
     - user_priorities (dict): Optional user-defined priorities for resource conservation, accuracy, and loss.
     
     Returns:
@@ -13,9 +12,8 @@ def define_priorities(normalized_scores, user_priorities=None):
     """
     # Default weights if user priorities are not provided
     default_priorities = {
-        "batch_size_adjustment": 0.3,
-        "pruning_adjustment": 0.3,
-        "accuracy_improvement": 0.4,
+        "batch_size_adjustment": 0.05,
+        "accuracy_improvement": 0.95,
     }
     
     # Use user-defined priorities if available
@@ -24,8 +22,6 @@ def define_priorities(normalized_scores, user_priorities=None):
     # Calculate weighted priority scores
     priority_value = {
         "batch_size": priorities["batch_size_adjustment"] * normalized_scores.get('memory_score'),
-        "pruning": (priorities["pruning_adjustment"] * normalized_scores.get('memory_score') +
-                    priorities["accuracy_improvement"] * normalized_scores.get('accuracy_score')) / 2,
         "learning_rate": (priorities["accuracy_improvement"] * normalized_scores.get('accuracy_score')),
     }
     

@@ -18,7 +18,7 @@ def test_log_usage_once(tmpdir):
     # Call the function to log usage
     lr = 0.001
     batch_size = 32
-    pruning = 0.5
+    pruning = 0.2
     num_epoch = 5
     prev_accuracy = 0.8
     curr_accuracy = 0.6
@@ -27,7 +27,7 @@ def test_log_usage_once(tmpdir):
     normalized_scores = compute_scores(prev_accuracy, curr_accuracy, score_ranges=None, resources=mock_resources)
     priority_value = define_priorities(normalized_scores)
 
-    log_usage_once(log_file, batch_size, pruning, lr, normalized_scores, priority_value, num_epoch, resources=mock_resources)
+    log_usage_once(log_file, pruning, batch_size, lr, normalized_scores, priority_value, num_epoch, resources=mock_resources)
 
     # Verify the log file is created
     assert os.path.exists(log_file), "Log file was not created."
@@ -42,8 +42,8 @@ def test_log_usage_once(tmpdir):
                 'Timestamp', 'Epoch #', 'CPU Usage (%)', 'CPU RAM (%)',
                 'GPU RAM (%)', 'GPU Usage (%)',
                 'Mem Score', 'Acc Score',
-                'Priority Batch Size', 'Priority Pruning', 'Priority Learning Rate',
-                'Batch Size', 'Pruning', 'Learning Rate', 
+                'Priority Batch Size', 'Priority Learning Rate',
+                'Pruning', 'Batch Size', 'Learning Rate', 
             ]
         assert reader.fieldnames == expected_header, "Log file header is incorrect."
 
@@ -54,10 +54,9 @@ def test_log_usage_once(tmpdir):
         assert log_entry['Mem Score'] == str(normalized_scores.get('memory_score')), "Mem score mismatch."
         assert log_entry['Acc Score'] == str(normalized_scores.get('accuracy_score')), "Acc score mismatch."
         assert log_entry['Priority Batch Size'] == str(priority_value.get('batch_size')), "Priority batch size mismatch."
-        assert log_entry['Priority Pruning'] == str(priority_value.get('pruning')), "Priority pruning mismatch."
         assert log_entry['Priority Learning Rate'] == str(priority_value.get('learning_rate')), "Priority learning rate mismatch."
+        assert log_entry['Pruning'] == str(pruning), "Pruning ratio mismatch."
         assert log_entry['Batch Size'] == str(batch_size), "Batch size mismatch."
-        assert log_entry['Pruning'] == str(pruning), "Pruning mismatch."
         assert log_entry['Learning Rate'] == str(lr), "Learning rate mismatch."
 
         # Validate timestamp format
