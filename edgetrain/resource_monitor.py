@@ -7,14 +7,15 @@ def sys_resources():
     Monitor system resources, including CPU and GPU utilization and memory usage.
 
     Returns:
-    - cpu_cores: Number of logical CPU cores.
-    - cpu_compute_percent: CPU utilization as a percentage.
-    - cpu_memory_percent: RAM usage as a percentage.
-    - gpu_compute_percent: Average GPU compute utilization as a percentage.
-    - gpu_memory_usage: Total GPU memory used across all GPUs (in MB).
-    - gpu_memory_total: Total available GPU memory across all GPUs (in MB).
-    - gpu_memory_percent: Average GPU memory utilization as a percentage.
-    - num_gpus: Number of GPUs available.
+    - dict: A dictionary containing the following keys:
+        - cpu_cores (int): Number of logical CPU cores.
+        - cpu_compute_percent (float): CPU utilization as a percentage.
+        - cpu_memory_percent (float): RAM usage as a percentage.
+        - gpu_compute_percent (float): Average GPU compute utilization as a percentage.
+        - gpu_memory_usage (float): Total GPU memory used across all GPUs (in MB).
+        - gpu_memory_total (float): Total available GPU memory across all GPUs (in MB).
+        - gpu_memory_percent (float): Average GPU memory utilization as a percentage.
+        - num_gpus (int): Number of GPUs available.
     """
 
     # Check CPU usage (compute and RAM)
@@ -52,16 +53,19 @@ def sys_resources():
     }
 
 
-# Function to log resource usage and batch size
 def log_usage_once(log_file, pruning, batch_size, lr, normalize_scores, priority_value, num_epoch=0, resources=None):
     """
     Log GPU and CPU resource usage once.
     
     Parameters:
     - log_file (str): Path to the log file.
-    - lr (float): Learning rate.
+    - pruning (bool): Whether pruning is enabled.
     - batch_size (int): Current batch size.
+    - lr (float): Learning rate.
+    - normalize_scores (dict): Dictionary of normalized scores.
+    - priority_value (dict): Dictionary of priority values.
     - num_epoch (int, optional): Current epoch number. Default is 0.
+    - resources (dict, optional): Dictionary containing system resource usage metrics. If None, system resources will be fetched.
     """
     
     # Create CSV header if the file doesn't exist
@@ -73,20 +77,19 @@ def log_usage_once(log_file, pruning, batch_size, lr, normalize_scores, priority
             writer = csv.writer(f)
             header = [
                 'Timestamp', 'Epoch #', 'CPU Usage (%)', 'CPU RAM (%)',
-                 'GPU RAM (%)', 'GPU Usage (%)',
-                 'Mem Score', 'Acc Score',
-                 'Priority Batch Size', 'Priority Learning Rate',
-                 'Pruning', 'Batch Size', 'Learning Rate', 
+                'GPU RAM (%)', 'GPU Usage (%)',
+                'Mem Score', 'Acc Score',
+                'Priority Batch Size', 'Priority Learning Rate',
+                'Pruning', 'Batch Size', 'Learning Rate', 
             ]
             writer.writerow(header)
 
-    
     # Get resource usage
     if resources is None:
         resources = sys_resources()
-    cpu_compute_percent=resources.get('cpu_compute_percent')
+    cpu_compute_percent = resources.get('cpu_compute_percent')
     cpu_memory_percent = resources.get('cpu_memory_percent')
-    gpu_compute_percent = resources.get('gpu_compute_percent') 
+    gpu_compute_percent = resources.get('gpu_compute_percent')
     gpu_memory_percent = resources.get('gpu_memory_percent')
 
     memory_score = normalize_scores.get('memory_score')
@@ -94,7 +97,6 @@ def log_usage_once(log_file, pruning, batch_size, lr, normalize_scores, priority
     batch_size_priority_value = priority_value.get('batch_size')
     learning_rate_priority_value = priority_value.get('learning_rate')
 
-    
     # Prepare log entry
     log_entry = [
         datetime.now().strftime("%Y-%m-%d %H:%M:%S"),

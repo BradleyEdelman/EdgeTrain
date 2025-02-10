@@ -10,9 +10,9 @@ def test_define_priorities_with_default_priorities():
     
     priority_value = define_priorities(normalized_scores)
     
-    # Default priorities: batch_size: 0.35, accuracy_improvement: 0.65
-    assert priority_value["batch_size"] == pytest.approx(0.28, rel=1e-3), "Batch size priority calculation failed."
-    assert priority_value["learning_rate"] == pytest.approx(0.26, rel=1e-3), "Learning rate priority calculation failed."
+    # Default priorities: batch_size: 0.4, accuracy_improvement: 0.6
+    assert priority_value["batch_size"] == pytest.approx(0.32, rel=1e-3), "Batch size priority calculation failed."
+    assert priority_value["learning_rate"] == pytest.approx(0.24, rel=1e-3), "Learning rate priority calculation failed."
 
 
 def test_define_priorities_with_custom_priorities():
@@ -55,5 +55,5 @@ def test_define_priorities_with_extreme_scores():
     
     priority_value = define_priorities(normalized_scores)
     
-    assert priority_value["batch_size"] == 0.35, "Batch size priority with extreme scores failed."
-    assert priority_value["learning_rate"] == 0.65, "Learning rate priority with extreme scores failed."
+    assert priority_value["batch_size"] == 0.40, "Batch size priority with extreme scores failed."
+    assert priority_value["learning_rate"] == 0.60, "Learning rate priority with extreme scores failed."

@@ -2,8 +2,8 @@
 .databricks/
 .vscode/
 
-# virtual environment
-venv/
+# virtual environments
+venv*/
 
 # Ignore edgetrain folders
 models/

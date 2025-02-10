@@ -23,7 +23,7 @@ def test_compute_scores():
     current_accuracy = 0.6
     scores = compute_scores(previous_accuracy, current_accuracy, score_ranges=None, resources=mock_resources)
     assert scores["memory_score"] == 0.5, "Memory score calculation failed with GPUs."
-    assert scores["accuracy_score"] == pytest.approx(0.2, rel=1e-3), "Accuracy score calculation failed."
+    assert scores["accuracy_score"] == pytest.approx(1, rel=1e-3), "Accuracy score calculation failed."
     
     # Test with no GPUs
     mock_resources = {
@@ -37,13 +37,13 @@ def test_compute_scores():
     previous_accuracy = 0.7
     current_accuracy = 0.7
     scores = compute_scores(previous_accuracy, current_accuracy, score_ranges=None, resources=mock_resources)
-    assert scores["accuracy_score"] == 0, "Accuracy score should be 0 for stagnation."
+    assert scores["accuracy_score"] == pytest.approx(1, rel=1e-3), "Accuracy score should be 1 for stagnation."
 
     # Test edge case where current accuracy is higher (clamped at 0)
     previous_accuracy = 0.6
     current_accuracy = 0.8
     scores = compute_scores(previous_accuracy, current_accuracy, score_ranges=None, resources=mock_resources)
-    assert scores["accuracy_score"] == 0, "Accuracy score should not be negative."
+    assert scores["accuracy_score"] == pytest.approx(0.8, rel=1e-3), "Accuracy score should be 1 for decreasing accuracy."
 
 
 def test_compute_scores_with_custom_ranges():
@@ -64,7 +64,7 @@ def test_compute_scores_with_custom_ranges():
     current_accuracy=0.6
     scores = compute_scores(previous_accuracy, current_accuracy, score_ranges=score_ranges, resources=mock_resources)
     assert scores["memory_score"] == pytest.approx(0.35, rel=1e-3), "Memory score normalization with custom range failed."
-    assert scores["accuracy_score"] == pytest.approx(0.4, rel=1e-3), "Accuracy score normalization with custom range failed."
+    assert scores["accuracy_score"] == pytest.approx(2.0, rel=1e-3), "Accuracy score normalization with custom range failed."
 
 
 def test_compute_scores_with_acc_improvement():
@@ -78,4 +78,4 @@ def test_compute_scores_with_acc_improvement():
     previous_accuracy=0.6
     current_accuracy=0.8
     scores = compute_scores(previous_accuracy, current_accuracy, score_ranges=None, resources=mock_resources)
-    assert scores["accuracy_score"] == pytest.approx(0, rel=1e-3), "Accuracy score normalization with custom range failed."
+    assert scores["accuracy_score"] == pytest.approx(0.80, rel=1e-3), "Accuracy score normalization with custom range failed."

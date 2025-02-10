@@ -2,14 +2,14 @@ import os
 
 def get_edgetrain_folder():
     """
-    Creates the necessary folder structure for the EdgeTrain project.
+    Create the necessary folder structure for the EdgeTrain project.
 
     This function navigates from the current working directory to the root directory,
-    then creates a "EdgeTrain" directory with subdirectories for models, logs, and images
+    then creates an "EdgeTrain" directory with subdirectories for models, logs, and images
     if they do not already exist.
 
     Returns:
-        str: The path to the "EdgeTrain" directory.
+    - str: The path to the "EdgeTrain" directory.
     """
 
     # Get the current working directory (assumed to be within the 'notebooks' folder)

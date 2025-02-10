@@ -2,12 +2,13 @@ from edgetrain import sys_resources
 
 def compute_scores(previous_accuracy, current_accuracy, score_ranges=None, resources=None):
     """
-    Compute memory, accuracy, and loss scores, and normalize them.
+    Compute memory and accuracy scores, and normalize them.
     
     Parameters:
     - previous_accuracy (float): Accuracy from the previous epoch.
     - current_accuracy (float): Current accuracy.
-    - score_ranges (float): Maximum possible accuracy improvement.
+    - score_ranges (dict, optional): Dictionary of maximum possible improvements for each score.
+    - resources (dict, optional): Dictionary containing system resource usage metrics. If None, system resources will be fetched.
     
     Returns:
     - normalized_scores (dict): Dictionary of normalized scores.
@@ -25,16 +26,16 @@ def compute_scores(previous_accuracy, current_accuracy, score_ranges=None, resou
         }
     
     # Calculate memory score
-    # # If there is a gpu average gpu and cpu for memory score, otherwise, just use cpu
+    # If there is a GPU, average GPU and CPU for memory score, otherwise, just use CPU
     if resources.get('num_gpus') > 0:
         memory_score = (resources.get('cpu_memory_percent') + resources.get('gpu_memory_percent')) / 2
     else:
         memory_score = resources.get('cpu_memory_percent')
 
     # Calculate accuracy score
-    accuracy_score = max(0, previous_accuracy - current_accuracy)
+    accuracy_score = 1 - max(0, current_accuracy - previous_accuracy)
 
-    # store all three scores in a dictionary
+    # Store all scores in a dictionary
     raw_scores = {
         "memory_score": memory_score,
         "accuracy_score": accuracy_score

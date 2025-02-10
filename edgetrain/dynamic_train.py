@@ -19,7 +19,7 @@ def dynamic_train(
     Train the model with optional dynamic resource adjustment.
 
     Parameters:
-    - train_dataset (dict): The training dataset.
+    - train_dataset (dict): The training dataset containing 'images' and 'labels'.
     - epochs (int): Number of epochs to train the model.
     - batch_size (int): The base batch size to use.
     - lr (float): The initial learning rate.
@@ -28,8 +28,8 @@ def dynamic_train(
     - dynamic_adjustments (bool): Flag to enable/disable dynamic adjustments.
 
     Returns:
-    - final_model: The trained and stripped model.
-    - history_list: A list of training history for each epoch.
+    - final_model (tf.keras.Model): The trained and stripped model.
+    - history_list (list): A list of training history for each epoch.
     """
 
     # Log initial resource usage

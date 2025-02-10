@@ -1,19 +1,21 @@
 def define_priorities(normalized_scores, user_priorities=None):
     """
-    Calculate priority scores for adjustments based on resource usage, accuracy, and loss.
+    Calculate priority scores for adjustments based on resource usage and accuracy.
     
     Parameters:
-    - memory_score (float): Score indicating memory usage pressure (0-100).
-    - accuracy_score (float): Score indicating stagnation in accuracy improvement (0-1).
-    - user_priorities (dict): Optional user-defined priorities for resource conservation, accuracy, and loss.
+    - normalized_scores (dict): Dictionary containing normalized scores for memory usage and accuracy.
+        - memory_score (float): Score indicating memory usage pressure (0-100).
+        - accuracy_score (float): Score indicating stagnation in accuracy improvement (0-1).
+    - user_priorities (dict, optional): Optional user-defined priorities for resource conservation and accuracy improvement.
     
     Returns:
-    - priority_value (dict): A dictionary of priority scores for batch size, pruning, and learning rate.
+    - priority_value (dict): A dictionary of priority scores for batch size and learning rate.
     """
+    
     # Default weights if user priorities are not provided
     default_priorities = {
-        "batch_size_adjustment": 0.05,
-        "accuracy_improvement": 0.95,
+        "batch_size_adjustment": 0.4,
+        "accuracy_improvement": 0.6,
     }
     
     # Use user-defined priorities if available
