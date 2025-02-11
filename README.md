@@ -127,6 +127,7 @@ Contributions are welcomed:
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
 
+
 ## Known Limitations (v0.2.0)
 - Currently supports **TensorFlow only**. Future updates will expand framework support.
 - **Gradient accumulation**: Planned for a future release to further optimize memory usage
