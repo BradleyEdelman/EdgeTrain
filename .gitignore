@@ -9,6 +9,7 @@ venv*/
 models/
 logs/
 images/
+results/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

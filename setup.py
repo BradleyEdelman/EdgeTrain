@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 setup(
     name="edgetrain",
@@ -12,12 +12,12 @@ setup(
         "pandas>=1.5.0",
         "numpy>=1.24.0",
         "pynvml>=8.0.0",
-	    "torch>=2.5.1",
+        "torch>=2.5.1",
     ],
     extras_require={
-	'dev': [
-	     'pytest', # for testing
-	]
+        "dev": [
+            "pytest",  # for testing
+        ]
     },
     description="A utility for machine learning training with limited resources.",
     author="Bradley Edelman",

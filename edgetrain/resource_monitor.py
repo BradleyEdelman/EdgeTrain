@@ -1,6 +1,15 @@
-import psutil, GPUtil, csv
+import csv
 from datetime import datetime
-from pynvml import nvmlInit, nvmlDeviceGetHandleByIndex, nvmlDeviceGetUtilizationRates, nvmlShutdown
+
+import GPUtil
+import psutil
+from pynvml import (
+    nvmlDeviceGetHandleByIndex,
+    nvmlDeviceGetUtilizationRates,
+    nvmlInit,
+    nvmlShutdown,
+)
+
 
 def sys_resources():
     """
@@ -21,26 +30,32 @@ def sys_resources():
     # Check CPU usage (compute and RAM)
     cpu_compute_percent = psutil.cpu_percent(interval=1)
     cpu_cores = psutil.cpu_count(logical=True)
-    
+
     # Check GPU usage (memory and compute)
     gpus = GPUtil.getGPUs()
     num_gpus = len(gpus)
     gpu_memory_usage = sum(gpu.memoryUsed for gpu in gpus)
     gpu_memory_total = sum(gpu.memoryTotal for gpu in gpus)
     gpu_memory_percent = sum(gpu.memoryUtil for gpu in gpus) / num_gpus if gpus else 0
-    
+
     # GPU compute utilization
     gpu_compute_percent = 0
     if num_gpus > 0:
         nvmlInit()
         try:
-            gpu_compute_percent = sum(nvmlDeviceGetUtilizationRates(nvmlDeviceGetHandleByIndex(i)).gpu for i in range(num_gpus)) / num_gpus
+            gpu_compute_percent = (
+                sum(
+                    nvmlDeviceGetUtilizationRates(nvmlDeviceGetHandleByIndex(i)).gpu
+                    for i in range(num_gpus)
+                )
+                / num_gpus
+            )
         finally:
             nvmlShutdown()
-    
+
     # Check system memory usage (RAM)
     cpu_memory_percent = psutil.virtual_memory().percent
-    
+
     return {
         "cpu_cores": cpu_cores,
         "cpu_compute_percent": cpu_compute_percent,
@@ -49,14 +64,23 @@ def sys_resources():
         "gpu_memory_usage": gpu_memory_usage,
         "gpu_memory_total": gpu_memory_total,
         "gpu_memory_percent": gpu_memory_percent,
-        "num_gpus": num_gpus
+        "num_gpus": num_gpus,
     }
 
 
-def log_usage_once(log_file, pruning, batch_size, lr, normalize_scores, priority_value, num_epoch=0, resources=None):
+def log_usage_once(
+    log_file,
+    pruning,
+    batch_size,
+    lr,
+    normalize_scores,
+    priority_value,
+    num_epoch=0,
+    resources=None,
+):
     """
     Log GPU and CPU resource usage once.
-    
+
     Parameters:
     - log_file (str): Path to the log file.
     - pruning (bool): Whether pruning is enabled.
@@ -67,35 +91,43 @@ def log_usage_once(log_file, pruning, batch_size, lr, normalize_scores, priority
     - num_epoch (int, optional): Current epoch number. Default is 0.
     - resources (dict, optional): Dictionary containing system resource usage metrics. If None, system resources will be fetched.
     """
-    
+
     # Create CSV header if the file doesn't exist
     try:
-        with open(log_file, 'r') as f:
+        with open(log_file, "r") as f:
             pass
     except FileNotFoundError:
-        with open(log_file, 'w', newline='') as f:
+        with open(log_file, "w", newline="") as f:
             writer = csv.writer(f)
             header = [
-                'Timestamp', 'Epoch #', 'CPU Usage (%)', 'CPU RAM (%)',
-                'GPU RAM (%)', 'GPU Usage (%)',
-                'Mem Score', 'Acc Score',
-                'Priority Batch Size', 'Priority Learning Rate',
-                'Pruning', 'Batch Size', 'Learning Rate', 
+                "Timestamp",
+                "Epoch #",
+                "CPU Usage (%)",
+                "CPU RAM (%)",
+                "GPU RAM (%)",
+                "GPU Usage (%)",
+                "Mem Score",
+                "Acc Score",
+                "Priority Batch Size",
+                "Priority Learning Rate",
+                "Pruning",
+                "Batch Size",
+                "Learning Rate",
             ]
             writer.writerow(header)
 
     # Get resource usage
     if resources is None:
         resources = sys_resources()
-    cpu_compute_percent = resources.get('cpu_compute_percent')
-    cpu_memory_percent = resources.get('cpu_memory_percent')
-    gpu_compute_percent = resources.get('gpu_compute_percent')
-    gpu_memory_percent = resources.get('gpu_memory_percent')
+    cpu_compute_percent = resources.get("cpu_compute_percent")
+    cpu_memory_percent = resources.get("cpu_memory_percent")
+    gpu_compute_percent = resources.get("gpu_compute_percent")
+    gpu_memory_percent = resources.get("gpu_memory_percent")
 
-    memory_score = normalize_scores.get('memory_score')
-    accuracy_score = normalize_scores.get('accuracy_score')
-    batch_size_priority_value = priority_value.get('batch_size')
-    learning_rate_priority_value = priority_value.get('learning_rate')
+    memory_score = normalize_scores.get("memory_score")
+    accuracy_score = normalize_scores.get("accuracy_score")
+    batch_size_priority_value = priority_value.get("batch_size")
+    learning_rate_priority_value = priority_value.get("learning_rate")
 
     # Prepare log entry
     log_entry = [
@@ -111,10 +143,10 @@ def log_usage_once(log_file, pruning, batch_size, lr, normalize_scores, priority
         learning_rate_priority_value,
         pruning,
         batch_size,
-        lr
+        lr,
     ]
 
     # Append log entry to the file
-    with open(log_file, 'a', newline='') as f:
+    with open(log_file, "a", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(log_entry)

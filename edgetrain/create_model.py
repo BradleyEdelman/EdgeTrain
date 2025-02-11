@@ -1,6 +1,7 @@
+import numpy as np
 import tensorflow as tf
 from tensorflow.keras import layers, models
-import numpy as np
+
 
 def create_model_tf(input_shape, model_path=None):
     """
@@ -13,7 +14,7 @@ def create_model_tf(input_shape, model_path=None):
     Returns:
     - model: A compiled tensorflow model.
     """
-    
+
     # Ensure that the input shape is provided
     if input_shape is None:
         raise ValueError("Input shape must be defined.")
@@ -22,19 +23,22 @@ def create_model_tf(input_shape, model_path=None):
         model = tf.keras.models.load_model(model_path)
     else:
         # Define a Sequential model with input layer, Conv2D, MaxPooling2D, Flatten, and Dense layers
-        model = models.Sequential([
-            layers.Input(shape=input_shape),
-            layers.Conv2D(32, (3, 3), activation='relu'),
-            layers.MaxPooling2D((2, 2)),
-            layers.Conv2D(64, (3, 3), activation='relu'),
-            layers.MaxPooling2D((2, 2)),
-            layers.Conv2D(64, (3, 3), activation='relu'),
-            layers.Flatten(),
-            layers.Dense(64, activation='relu'),
-            layers.Dense(10, activation='softmax')
-        ])
-        
+        model = models.Sequential(
+            [
+                layers.Input(shape=input_shape),
+                layers.Conv2D(32, (3, 3), activation="relu"),
+                layers.MaxPooling2D((2, 2)),
+                layers.Conv2D(64, (3, 3), activation="relu"),
+                layers.MaxPooling2D((2, 2)),
+                layers.Conv2D(64, (3, 3), activation="relu"),
+                layers.Flatten(),
+                layers.Dense(64, activation="relu"),
+                layers.Dense(10, activation="softmax"),
+            ]
+        )
+
     return model
+
 
 def check_sparsity(model):
     """
@@ -50,7 +54,7 @@ def check_sparsity(model):
     total_params = 0
     zero_params = 0
     for layer in model.layers:
-        if hasattr(layer, 'weights'):
+        if hasattr(layer, "weights"):
             for weight in layer.weights:
                 weight_values = weight.numpy()
                 total_params += np.prod(weight_values.shape)

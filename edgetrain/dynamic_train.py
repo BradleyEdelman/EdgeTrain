@@ -1,19 +1,24 @@
 import tensorflow as tf
-from tensorflow import keras
 import tensorflow_model_optimization as tfmot
+from tensorflow import keras
+
 from edgetrain import (
-    log_usage_once, create_model_tf, compute_scores, 
-    define_priorities, adjust_training_parameters
+    adjust_training_parameters,
+    compute_scores,
+    create_model_tf,
+    define_priorities,
+    log_usage_once,
 )
 
+
 def dynamic_train(
-    train_dataset, 
-    epochs=10, 
-    batch_size=32, 
-    lr=1e-3, 
-    pruning=0.2, 
-    log_file="resource_log.csv", 
-    dynamic_adjustments=True
+    train_dataset,
+    epochs=10,
+    batch_size=32,
+    lr=1e-3,
+    pruning=0.2,
+    log_file="resource_log.csv",
+    dynamic_adjustments=True,
 ):
     """
     Train the model with optional dynamic resource adjustment.
@@ -35,7 +40,16 @@ def dynamic_train(
     # Log initial resource usage
     normalized_scores = {"memory_score": 0, "accuracy_score": 0}
     priority_value = {"batch_size": 0, "learning_rate": 0}
-    log_usage_once(log_file, pruning, batch_size, lr, normalized_scores, priority_value, num_epoch=0, resources=None)
+    log_usage_once(
+        log_file,
+        pruning,
+        batch_size,
+        lr,
+        normalized_scores,
+        priority_value,
+        num_epoch=0,
+        resources=None,
+    )
 
     # Create MirroredStrategy for distributed training
     strategy = tf.distribute.MirroredStrategy()
@@ -45,7 +59,7 @@ def dynamic_train(
     prev_accuracy = 0.0
 
     # Prepare training data
-    train_images, train_labels = train_dataset['images'], train_dataset['labels']
+    train_images, train_labels = train_dataset["images"], train_dataset["labels"]
 
     # Create model within scope and apply initial pruning
     with strategy.scope():
@@ -53,8 +67,14 @@ def dynamic_train(
         optimizer = keras.optimizers.Adam(learning_rate=lr)
 
         pruning_schedule = tfmot.sparsity.keras.ConstantSparsity(pruning, begin_step=0)
-        model = tfmot.sparsity.keras.prune_low_magnitude(base_model, pruning_schedule=pruning_schedule)
-        model.compile(optimizer=optimizer, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+        model = tfmot.sparsity.keras.prune_low_magnitude(
+            base_model, pruning_schedule=pruning_schedule
+        )
+        model.compile(
+            optimizer=optimizer,
+            loss="sparse_categorical_crossentropy",
+            metrics=["accuracy"],
+        )
 
     # Training model one epoch at a time
     for epoch in range(epochs):
@@ -68,14 +88,14 @@ def dynamic_train(
             train_labels,
             batch_size=batch_size,
             epochs=1,
-            callbacks=callbacks
-        )  
+            callbacks=callbacks,
+        )
 
         # Save training history
         history_list.append(history.history)
 
         # Update "current" accuracy
-        curr_accuracy = history.history['accuracy'][-1]
+        curr_accuracy = history.history["accuracy"][-1]
 
         # If dynamic adjustments are enabled
         if dynamic_adjustments:
@@ -88,16 +108,27 @@ def dynamic_train(
                 priority_values=priority_value,
                 batch_size=batch_size,
                 lr=lr,
-                accuracy_score=curr_accuracy
+                accuracy_score=curr_accuracy,
             )
 
             batch_size = adjusted_batch_size
             lr = adjusted_lr
 
-            print(f"Adjusted parameters for next epoch: batch_size={batch_size}, pruning_ratio={pruning}, learning_rate={lr}")
+            print(
+                f"Adjusted parameters for next epoch: batch_size={batch_size}, pruning_ratio={pruning}, learning_rate={lr}"
+            )
 
         # Log resource usage
-        log_usage_once(log_file, pruning, batch_size, lr, normalized_scores, priority_value, num_epoch=epoch + 1, resources=None)
+        log_usage_once(
+            log_file,
+            pruning,
+            batch_size,
+            lr,
+            normalized_scores,
+            priority_value,
+            num_epoch=epoch + 1,
+            resources=None,
+        )
 
         # Update previous accuracy
         prev_accuracy = curr_accuracy
