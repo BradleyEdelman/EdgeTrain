@@ -1,6 +1,6 @@
 import pytest
 
-from edgetrain import define_priorities
+from edgetrain.calculate_priorities import define_priorities
 
 
 def test_define_priorities_with_default_priorities():

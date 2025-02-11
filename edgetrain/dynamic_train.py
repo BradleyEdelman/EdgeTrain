@@ -2,13 +2,11 @@ import tensorflow as tf
 import tensorflow_model_optimization as tfmot
 from tensorflow import keras
 
-from edgetrain import (
-    adjust_training_parameters,
-    compute_scores,
-    create_model_tf,
-    define_priorities,
-    log_usage_once,
-)
+from edgetrain.adjust_train_parameters import adjust_training_parameters
+from edgetrain.calculate_priorities import define_priorities
+from edgetrain.calculate_scores import compute_scores
+from edgetrain.create_model import create_model_tf
+from edgetrain.resource_monitor import log_usage_once
 
 
 def dynamic_train(

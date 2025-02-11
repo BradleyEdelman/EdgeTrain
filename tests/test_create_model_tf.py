@@ -1,7 +1,7 @@
 import pytest
 from tensorflow.keras import models
 
-from edgetrain import create_model_tf
+from edgetrain.create_model import create_model_tf
 
 
 def test_create_model_without_path():

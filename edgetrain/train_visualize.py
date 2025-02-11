@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from edgetrain import get_edgetrain_folder
+from edgetrain.edgetrain_folder import get_edgetrain_folder
 
 
 def log_usage_plot(log_file):

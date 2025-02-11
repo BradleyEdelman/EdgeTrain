@@ -1,4 +1,4 @@
-from edgetrain import sys_resources
+from edgetrain.resource_monitor import sys_resources
 
 
 def adjust_training_parameters(

@@ -2,7 +2,9 @@ import csv
 import os
 from datetime import datetime
 
-from edgetrain import compute_scores, define_priorities, log_usage_once
+from edgetrain.calculate_priorities import define_priorities
+from edgetrain.calculate_scores import compute_scores
+from edgetrain.resource_monitor import log_usage_once
 
 
 def test_log_usage_once(tmpdir):

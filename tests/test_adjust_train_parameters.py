@@ -1,6 +1,6 @@
 import pytest
 
-from edgetrain import adjust_training_parameters
+from edgetrain.adjust_train_parameters import adjust_training_parameters
 
 
 @pytest.fixture

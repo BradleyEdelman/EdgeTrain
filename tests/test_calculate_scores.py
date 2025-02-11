@@ -1,6 +1,6 @@
 import pytest
 
-from edgetrain import compute_scores, normalize_scores
+from edgetrain.calculate_scores import compute_scores, normalize_scores
 
 
 def test_normalize_scores():
