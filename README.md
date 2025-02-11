@@ -1,7 +1,7 @@
 # EdgeTrain: Automated Resource Adjustment for Efficient Edge AI Training  
 **Version: 0.2.0**
 
-EdgeTrain is a Python package designed to dynamically adjust deep learning training parameters and strategies based on CPU and GPU performance. It optimizes the training process by adjusting batch size and learning rate to ensure efficient training without overutilizing or underutilizing available resources. This package is specifically designed to reduce memory usage for model training on edge AI devices, laptops or other setups that have limited memory.  
+EdgeTrain is a Python package designed to dynamically adjust deep learning training parameters and strategies based on CPU and GPU performance. It optimizes the training process by adjusting batch size and learning rate to ensure efficient training without overutilizing or underutilizing available resources. This package is specifically designed to balance model training performance and memory usage on edge AI devices, laptops or other setups that have limited memory.  
 
 ## Features
 
@@ -16,7 +16,7 @@ EdgeTrain logs system performance and training parameters, allowing post-hoc vis
 - Training parameter adjustments across epochs.
 - Correlations between resource usage and model performance.
   
-The provided visualization tools help you understand how system resources are being utilized and how training parameters evolve during training.
+The provided visualization tools illustrate how system resources are being utilized and how training parameters evolve during training.
 
 ### Customization and control
 EdgeTrain is highly customizable. You can easily modify:
@@ -27,8 +27,8 @@ EdgeTrain is highly customizable. You can easily modify:
 ## Release Notes for v0.2.0
 This version introduces a **refined adaptive training strategy with a constant pruning ratio**. Key updates:
 
-- **Score Calculation**: This version now computes an **accuracy score** and a **memory score** based on resource usage and model performance
-- **Parameter Prioritization**: Accuracy and memory scores are weighted according to default or user-defined priority weighting to idenfity a priority list for parameter adjustment. Now, only the top priority paramater is adjusted in each epoch.
+- **Score Calculation**: This version now computes an **accuracy score** and a **memory score** based on resource usage and model performance.
+- **Parameter Prioritization**: Accuracy and memory scores are weighted according to default or user-defined priority weighting schemes to idenfity a priority order for parameter adjustment. Only the top priority paramater is adjusted in each epoch.
     - **Batch size priority** is weighted by memory usage.
     - **Learning rate priority** is inversely weighted by accuracy improvement (i.e. increases if accuracy stagnates).
 - **Fixed Pruning Ratio**: Pruning is constant and is stripped at the end.
@@ -105,7 +105,9 @@ EdgeTrain/
 │   ├── ci.yml
 │   └──lint.yml
 │
+├── .flake8
 ├── .gitignore
+├── .isort.cfg
 ├── .pre-commit-config.yaml
 ├── CHANGELOG.md
 ├── LICENSE
