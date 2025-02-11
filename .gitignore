@@ -1,10 +1,15 @@
-# Ignore Databricks folder
+# Ignore Databricks, vscode
 .databricks/
+.vscode/
+
+# virtual environments
+venv*/
 
 # Ignore edgetrain folders
 models/
 logs/
 images/
+results/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

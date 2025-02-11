@@ -1,5 +1,7 @@
+import numpy as np
 import tensorflow as tf
 from tensorflow.keras import layers, models
+
 
 def create_model_tf(input_shape, model_path=None):
     """
@@ -12,7 +14,7 @@ def create_model_tf(input_shape, model_path=None):
     Returns:
     - model: A compiled tensorflow model.
     """
-    
+
     # Ensure that the input shape is provided
     if input_shape is None:
         raise ValueError("Input shape must be defined.")
@@ -21,53 +23,41 @@ def create_model_tf(input_shape, model_path=None):
         model = tf.keras.models.load_model(model_path)
     else:
         # Define a Sequential model with input layer, Conv2D, MaxPooling2D, Flatten, and Dense layers
-        model = models.Sequential([
-            layers.InputLayer(shape=input_shape),
-            layers.Conv2D(32, (3, 3), activation='relu'),
-            layers.MaxPooling2D((2, 2)),
-            layers.Conv2D(64, (3, 3), activation='relu'),
-            layers.MaxPooling2D((2, 2)),
-            layers.Conv2D(64, (3, 3), activation='relu'),
-            layers.Flatten(),
-            layers.Dense(64, activation='relu'),
-            layers.Dense(10, activation='softmax')
-        ])
-        
+        model = models.Sequential(
+            [
+                layers.Input(shape=input_shape),
+                layers.Conv2D(32, (3, 3), activation="relu"),
+                layers.MaxPooling2D((2, 2)),
+                layers.Conv2D(64, (3, 3), activation="relu"),
+                layers.MaxPooling2D((2, 2)),
+                layers.Conv2D(64, (3, 3), activation="relu"),
+                layers.Flatten(),
+                layers.Dense(64, activation="relu"),
+                layers.Dense(10, activation="softmax"),
+            ]
+        )
+
     return model
 
 
-def create_model_torch(input_shape, model_path=None):
+def check_sparsity(model):
     """
-    Create a Convolutional Neural Network (CNN) model.
+    Calculate the sparsity of a given model.
 
     Parameters:
-    - input_shape (tuple): the shape of the input data (e.g., (1, 28, 28) for MNIST).
-    - model_path (str): the path to load the model.
+    - model (tf.keras.Model): The TensorFlow model to check sparsity for.
 
     Returns:
-    - model: A compiled pytorch model.
+    - float: The sparsity of the model, defined as the ratio of zero-valued parameters to the total number of parameters.
     """
 
-    import torch.nn as nn
-    import torch.nn.functional as F
-
-    class CNN(nn.Module):
-        def __init__(self):
-            super(CNN, self).__init__()
-            self.conv1 = nn.Conv2d(in_channels=1, out_channels=32, kernel_size=3)
-            self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
-            self.conv2 = nn.Conv2d(32, 64, 3)
-            self.flatten = nn.Flatten()
-            self.fc1 = nn.Linear(64 * 5 * 5, 128)
-            self.fc2 = nn.Linear(128, 10)
-
-        def forward(self, x):
-            x = self.pool(F.relu(self.conv1(x)))
-            x = self.pool(F.relu(self.conv2(x)))
-            x = self.flatten(x)
-            x = F.relu(self.fc1(x))
-            x = self.fc2(x)
-            return x
-
-    model = CNN()
-    return model
+    total_params = 0
+    zero_params = 0
+    for layer in model.layers:
+        if hasattr(layer, "weights"):
+            for weight in layer.weights:
+                weight_values = weight.numpy()
+                total_params += np.prod(weight_values.shape)
+                zero_params += np.sum(np.isclose(weight_values, 0))
+    sparsity = (zero_params / total_params) if total_params > 0 else 0
+    return sparsity
