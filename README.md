@@ -38,7 +38,7 @@ This version introduces a **refined adaptive training strategy with a constant p
 You can install the latest version of EdgeTrain via pip:
 
 ```bash
-pip install https://github.com/BradleyEdelman/EdgeTrain/releases/download/v0.2.0-alpha/edgetrain-0.2.0.tar.gz
+pip install https://github.com/BradleyEdelman/EdgeTrain/releases/download/v0.2.0/edgetrain-0.2.0.tar.gz
 ```
 
 Alternatively, clone the repository and install manually:
@@ -103,7 +103,7 @@ EdgeTrain/
 │
 ├── .github/workflows/
 │   ├── ci.yml
-│   └──lint.yml
+│   └── lint.yml
 │
 ├── .flake8
 ├── .gitignore
